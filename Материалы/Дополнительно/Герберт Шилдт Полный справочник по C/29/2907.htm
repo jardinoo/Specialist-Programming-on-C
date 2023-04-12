@@ -1,0 +1,146 @@
+<HTML><HEAD>
+<TITLE>Библиотечные функции Little C</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#29">Содержание</A> | <A href="2906.htm">&lt;&lt;&lt;</A> | <A href="2908.htm">&gt;&gt;&gt;</A><HR>
+<H1>Библиотечные функции Little C</H1>
+<P class="tj">Программы С, выполняемые интерпретатором Little С, никогда не компилируются и не компонуются, поэтому любая используемая в них библиотечная функция должна быть обработана непосредственно интерпретатором Little С. Лучше всего для этого создать интерфейсную функцию, вызываемую интерпретатором каждый раз при встрече библиотечной функции. Интерфейсная функция осуществляет подготовку к вызову библиотечной функции и обрабатывает возвращаемые значения.
+<P class="tj">В связи с ограниченным размером интерпретатора, Little С содержит только пять "библиотечных" функций: <KBD>getche()</KBD>, <KBD>putch()</KBD>, <KBD>puts()</KBD>, <KBD>print()</KBD> и <KBD>getnum()</KBD>. Конечно, в Стандарт С входит только функция <KBD>puts()</KBD>, выводящая строку на экран. Функция <KBD>getche()</KBD>, хотя и не предусмотрена в Стандарте, обычно включается в состав библиотек, так как она используется при работе в интерактивной среде. Она ожидает нажатия клавиши и возвращает связанное с ней значение. Следует отметить, что эта функция предусмотрена во многих компиляторах. Функция <KBD>putch()</KBD> также определена во многих компиляторах, предназначенных для создания программ, работающих в интерактивной среде. Она выводит на консоль один символ — ее аргумент. Вывод не буферизован. Функции <KBD>getnum()</KBD> и <KBD>print()</KBD> созданы автором. Функция <KBD>getnum()</KBD> возвращает целое число, равное числу, введенному с клавиатуры. Функция <KBD>print()</KBD> может выводить на экран как строковый, так и целочисленный аргумент, это очень удобно. Прототипы этих библиотечных функций приведены ниже<SUP><A href="#11" name="1">[1]</A></SUP>:
+<PRE>
+/* считывание символа с клавиатуры и возврат его значения */
+int getche(void);
+/* вывод символа на экран */
+int putch(char ch);
+/* вывод строки на экран */
+int puts(char *s);
+/* чтение целого числа с клавиатуры и возврат его значения */
+int getnum(void);
+/* вывод строки на экран */
+int print(char *s);
+    или
+/* вывод целого числа на экран */
+int print(int i);
+</PRE>
+<P class="tj">Тексты процедур библиотеки функций Little С приведены ниже. Файл называется LCLIB.C.
+<PRE>
+/****** Библиотека функций Little C *******/
+
+/* Сюда можно добавлять новые функции. */
+
+#include &lt;conio.h&gt;  /* ели компилятор не поддерживает
+      данный заголовочный файл, этот #include можно удалять */
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+extern char *prog; /* указывает на текущий символ в программе */
+extern char token[80]; /* содержит строковое представление лексемы */
+extern char token_type; /* содержит тип лексемы */
+extern char tok; /* содержит внутренне представление лексемы */
+
+enum tok_types {DELIMITER, IDENTIFIER, NUMBER, KEYWORD,
+                TEMP, STRING, BLOCK};
+
+/* Эти константы используются для вызова функции sntx_err()
+   в случае синтаксической ошибки. При необходимости список
+   констант можно расширить.
+   ВНИМАНИЕ: константа SYNTAX используется тогда, когда
+   интерпритатор не может квалифицировать ошибку.
+*/
+enum error_msg
+     {SYNTAX, UNBAL_PARENS, NO_EXP, EQUALS_EXPECTED,
+      NOT_VAR, PARAM_ERR, SEMI_EXPECTED,
+      UNBAL_BRACES, FUNC_UNDEF, TYPE_EXPECTED,
+      NEST_FUNC, RET_NOCALL, PAREN_EXPECTED,
+      WHILE_EXPECTED, QUOTE_EXPECTED, NOT_STRING,
+      TOO_MANY_LVARS, DIV_BY_ZERO};
+
+int get_token(void);
+void sntx_err(int error), eval_exp(int *result);
+void putback(void);
+
+/* Считывание символа с консоли. Если компилятор
+   не поддерживает _getche(), то следует
+   использвать getchar() */
+int call_getche()
+{
+  char ch;
+  ch = _getche();
+  while(*prog!=')') prog++;
+  prog++;   /* продвижение к концу строки */
+  return ch;
+}
+
+/* Вывод символа на экран. */
+int call_putch()
+{
+  int value;
+
+  eval_exp(&value);
+  printf("%c", value);
+  return value;
+}
+
+/* Вызов функции puts(). */
+int call_puts(void)
+{
+  get_token();
+  if(*token!='(') sntx_err(PAREN_EXPECTED);
+  get_token();
+  if(token_type!=STRING) sntx_err(QUOTE_EXPECTED);
+  puts(token);
+  get_token();
+  if(*token!=')') sntx_err(PAREN_EXPECTED);
+
+  get_token();
+  if(*token!=';') sntx_err(SEMI_EXPECTED);
+  putback();
+  return 0;
+}
+
+/* Встроенная функция консольного вывода. */
+int print(void)
+{
+  int i;
+
+  get_token();
+  if(*token!='(')  sntx_err(PAREN_EXPECTED);
+
+  get_token();
+  if(token_type==STRING) { /* вывод строки */
+    printf("%s ", token);
+  }
+  else {  /* вывод числа */
+   putback();
+   eval_exp(&i);
+   printf("%d ", i);
+  }
+
+  get_token();
+
+  if(*token!=')') sntx_err(PAREN_EXPECTED);
+
+  get_token();
+  if(*token!=';') sntx_err(SEMI_EXPECTED);
+  putback();
+  return 0;
+}
+
+/* Считывание целого числа с клавиатуры. */
+int getnum(void)
+{
+  char s[80];
+
+  gets(s);
+  while(*prog != ')') prog++;
+  prog++;  /* продвижение к концу строки */
+  return atoi(s);
+}
+</PRE>
+<P class="tj">Для того чтобы добавить в библиотеку новые функции, следует сначала включить их имена и адреса интерфейсных функций в массив <KBD>intern_func</KBD>. После этого необходимо создать соответствующие интерфейсные функции, используя приведенные выше функции как пример.
+<P><IMG src="../work/sup.bmp" alt="----------">
+<BLOCKQUOTE>
+<P class="tj"><SUP><A href="#1" name="11">[1]</A></SUP>Язык Little С не поддерживает прототипы функций. Поэтому включать их в программу не следует. Здесь прототипы приведены в качестве справочной информации.
+</BLOCKQUOTE>
+<HR><A href="../main.htm#29">Содержание</A> | <A href="2906.htm">&lt;&lt;&lt;</A> | <A href="2908.htm">&gt;&gt;&gt;</A>
+</BODY></HTML>

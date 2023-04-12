@@ -1,0 +1,41 @@
+<HTML><HEAD>
+<TITLE>Функция fgetc</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция fgetc</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+int fgetc(FILE *<I>stream</I>);
+</PRE>
+<P class="tj">Функция <KBD>fgetc()</KBD> возвращает символ, взятый из входного потока <I>stream</I> и находящийся сразу после текущей позиции, а также увеличивает указатель текущей позиции файла. Этот символ читается как значение типа <KBD>unsigned char</KBD>, преобразованное в целое.
+<P class="tj">При достижении конца файла функция <KBD>fgetc()</KBD> возвращает значение <KBD>EOF</KBD>. Ho по скольку значение <KBD>EOF</KBD> является действительным целым значением, при работе с двоичными файлами для обнаружения конца файла необходимо использовать функцию <KBD>feof()</KBD>. Если функция <KBD>fgetc()</KBD> обнаруживает ошибку, она возвращает значение <KBD>EOF</KBD>. Для выявления ошибок, возникающих при работе с двоичными файлами, необходимо использовать функцию <KBD>ferror()</KBD>.
+<H2>Пример</H2>
+<P class="tj">Следующая программа читает и выводит на экран содержимое текстового файла.
+<PRE>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argc, char *argv[])
+{
+  FILE *fp;
+  char ch;
+
+  if((fp=fopen(argv[1],"r"))==NULL) {
+    printf("Невозможно открыть файл.\n");
+    exit(1);
+  }
+
+  while((ch=fgetc(fp)) != EOF) {
+    printf("%c", ch);
+  }
+  fclose(fp);
+
+  return 0;
+}
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="fputc.htm">fputc()</A>  <A href="getc.htm">getc()</A>  <A href="putc.htm">putc()</A>  <A href="fopen.htm">fopen()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

@@ -1,0 +1,23 @@
+<HTML><HEAD>
+<TITLE>Функция fputs</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция fputs</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+int fputs(const char *<I>str</I>, FILE *<I>stream</I>);
+</PRE>
+<P class="tj">Функция <KBD>fputs()</KBD> записывает в заданный поток <I>stream</I> содержимое строки, адресуемой указателем <I>str</I>. При этом завершающий нулевой символ (т.е. символ конца строки ('0')) не записывается.
+<P class="tj">В версии C99 к параметрам <I>str</I> и <I>stream</I> применен квалификатор <KBD>restrict</KBD>.
+<P class="tj">При успешном выполнении функция <KBD>fputs()</KBD> возвращает неотрицательное значение, а при неудачном — значение <KBD>EOF</KBD>.
+<P class="tj">Если поток открыт в текстовом режиме, могут произойти преобразования некоторых символов. Это значит, что однозначного отображения строки в файл может и не быть. Однако если поток открыт в двоичном режиме, никаких преобразований символов не будет и строка отобразится в файл "один к одному".
+<H2>Пример</H2>
+<P class="tj">Приведенный фрагмент программы записывает в поток, связанный с файлом <KBD>fp</KBD>,строку:
+<PRE>это тест</PRE>
+<PRE>fputs("это тест", fp);</PRE>
+<H2>Зависимые функции</H2>
+<A href="fgets.htm">fgets()</A>  <A href="gets.htm">gets()</A>  <A href="puts.htm">puts()</A>  <A href="fprintf.htm">fprintf()</A>  <A href="fscanf.htm">fscanf()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

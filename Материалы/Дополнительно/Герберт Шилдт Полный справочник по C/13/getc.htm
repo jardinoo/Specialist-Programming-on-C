@@ -1,0 +1,43 @@
+<HTML><HEAD>
+<TITLE>Функция getc</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция getc</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+int getc(FILE *<I>stream</I>);
+</PRE>
+<P class="tj">Функция <KBD>getc()</KBD> возвращает из входного потока <I>stream</I> символ, следующий за указателем текущей позиции, а затем увеличивает значение указателя текущей позиции. При чтении символа предполагается, что он имеет тип <KBD>unsigned char</KBD>, который потом преобразуется в целый.
+<P class="tj">При достижении конца файла функция <KBD>getc()</KBD> возвращает значение <KBD>EOF</KBD>. Ho поскольку значение <KBD>EOF</KBD> само является целым значением, при работе с двоичными файлами проверять условие достижения конца файла необходимо с помощью функции <KBD>feof()</KBD>. При обнаружении ошибки функция <KBD>getc()</KBD> также возвращает значение <KBD>EOF</KBD>. Поэтому для выявления ошибок при работе с двоичными файлами необходимо использовать функцию <KBD>ferror()</KBD>.
+<P class="tj">Функции <KBD>getc()</KBD> и <KBD>fgetc()</KBD> идентичны, но в большинстве реализаций функция <KBD>getc()</KBD> определена как макрос.
+<H2>Пример</H2>
+<P class="tj">Следующая программа читает содержимое текстового файла и выводит его на экран.
+<PRE>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argc, char *argv[])
+{
+  FILE *fp;
+  char ch;
+
+  if((fp=fopen(argv[1], "r"))==NULL) {
+    printf("Не удается открыть файл.\n");
+    exit(1);
+  }
+
+  while((ch=getc(fp))!=EOF) {
+    printf("%c", ch);
+  }
+
+  fclose(fp);
+
+  return 0;
+}
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="fputc.htm">fputc()</A>  <A href="fgetc.htm">fgetc()</A>  <A href="putc.htm">putc()</A>  <A href="fopen.htm">fopen()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

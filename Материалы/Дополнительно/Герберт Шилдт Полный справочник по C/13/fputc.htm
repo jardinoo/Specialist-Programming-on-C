@@ -1,0 +1,25 @@
+<HTML><HEAD>
+<TITLE>Функция fputc</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция fputc</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+int fputc(int <I>ch</I>, FILE *<I>stream</I>);
+</PRE>
+<P class="tj">Функция <KBD>fputc()</KBD> записывает символ <I>ch</I> в текущую позицию потока <I>stream</I>, a затем увеличивает указатель текущей позиции файла. Хотя на практике при объявлении символа <I>ch</I> он всегда имеет тип <KBD>int</KBD>, функцией <KBD>fputc()</KBD> тип символа преобразуется в <KBD>unsigned char</KBD>. Поскольку в момент вызова символьный аргумент преобразуется к целому типу, в качестве аргументов обычно можно использовать и символьные переменные. При использовании целого значения, старший байт попросту отбрасывается.
+<P class="tj">Значением, возвращаемым функцией <KBD>fputc()</KBD>, является значение записанного символа. При возникновении ошибки возвращается значение <KBD>EOF</KBD>. Если файл открыт для выполнения операций в двоичном режиме, значение <KBD>EOF</KBD> тоже может оказаться символом. Поэтому, чтобы определить, возникла ли ошибка на самом деле, в таких случаях придется использовать функцию <KBD>ferror()</KBD>.
+<H2>Пример</H2>
+<P class="tj">Приведенная функция записывает в заданный поток содержимое строки.
+<PRE>
+void write_string(char *str, FILE *fp)
+{
+  while(*str) if(!ferror(fp)) fputc(*str++, fp);
+}
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="fgetc.htm">fgetc()</A>  <A href="fopen.htm">fopen()</A>  <A href="fprintf.htm">fprintf()</A>  <A href="fread.htm">fread()</A>  <A href="fwrite.htm">fwrite()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

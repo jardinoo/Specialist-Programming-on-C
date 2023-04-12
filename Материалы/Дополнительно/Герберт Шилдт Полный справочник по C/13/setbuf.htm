@@ -1,0 +1,26 @@
+<HTML><HEAD>
+<TITLE>Функция setbuf</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция setbuf</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+void setbuf(FILE *<I>stream</I>, char *<I>buf</I>);
+</PRE>
+<P class="tj">Функция <KBD>setbuf()</KBD> задает буфер, которым будет пользоваться поток <I>stream</I>, либо отключает буферизацию, если параметр <I>buf</I> установлен равным нулю. Если необходимо задать буфер, определенный программистом, его длину следует установить равной <KBD>BUFSIZ</KBD> символам. Идентификатор <KBD>BUFSIZ</KBD> определяется в заголовке <KBD>&lt;stdio.h&gt;</KBD>.
+<P class="tj">В версии C99 к параметрам <I>stream</I> и <I>buf</I> применен квалификатор <KBD>restrict</KBD>.
+<H2>Пример</H2>
+<P class="tj">Следующий фрагмент связывает буфер, определенный программистом, с потоком, адресуемым указателем <KBD>fp</KBD>.
+<PRE>
+char buffer[BUFSIZ];
+.
+.
+.
+setbuf(fp, buffer);
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="fopen.htm">fopen()</A>  <A href="fclose.htm">fclose()</A>  <A href="setvbuf.htm">setvbuf()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

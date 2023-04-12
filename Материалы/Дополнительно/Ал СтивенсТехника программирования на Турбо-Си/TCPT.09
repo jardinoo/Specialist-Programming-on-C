@@ -1,0 +1,1518 @@
+
+
+                                 ГЛАВА 9
+                                 -------
+
+                         Оконный текстовый редактор
+     -----------------------------------------------------------------
+
+          В   Главе   8    обсуждалось   применение    видеоокон   для
+     использования  ввода данных в поля формо-ориентированного шаблона
+     ввода данных. Естественно, что  не  все поля данных имеют заранее
+     определенный, фиксированный формат.  Многие  поля и файлы состоят
+     из текстов свободной, неопределенной  формы и последовательности,
+     например, слова в книге или  комментарии  к  программе. Текстовые
+     процессоры и редакторы текстов позволяют вам строить    текстовые
+     файлы,  игнорируя формат исходных данных (текста),   однако, если
+     вы создаете  действительно  интегрированную  систему , то  доступ
+     к функциям  ввода текста  в вашу  программу и  его редактирование
+     может  вам  понадобиться  непосредственно  из   вашей  прикладной
+     программы.
+
+          Эта   глава   является   предварительным  описанием оконного
+     текстового  редактора,  который использует видеоокна  для ввода и
+     модификации  текста  точно  так  же,   как  большинство  программ
+     редактирования текста и текстовых процессоров.  Эта отличительная
+     черта оконного  редактора используется  при  создании программных
+     систем, в которых требуется ввод текста произвольной формы. Пакет
+     Sidekick является примером  системы,  в которой имеется сходный с
+     рассматриваемым в этой главе редактор текстов.  Пример программы,
+     представленный  в  этой  главе,  вполне  может  использоваться  в
+     качестве  редактора текстов  в  системах  типа  Sidekick. Оконный
+     текстовый  редактор  может  также  применяться  в  системах ввода
+     данных,   когда  требуется   ввести  в   качестве   данных  текст
+     произвольной  формы,  занимающий  более одной  строки. Прикладная
+     программа  типа  программы  ввода  данных  в  заданном  порядке с
+     помощью шаблона ввода данных  из Главы 8  может потребовать ввода
+     поля,  содержащего описательный текст. Это требование можно легко
+     реализовать,  применяя  оконный текстовый  редактор.  Многие базы
+     данных   оперируют   с   данными,   характеризующимися   наличием
+     поясняющего  их  текста,   различных  описаний  или  определенной
+     терминологии предметной области. При использовании шаблонов ввода
+     данных  поля  данных  такого типа могут с  успехом обрабатываться
+     оконным  редактором.   вы  также  можете  использовать  текстовый
+     редактор для подготовки текстов help-окон в вашей программе путем
+     обработки файла описаний help-окон, описанного в Главе 7.
+
+          Для использования  текстового  редактора  программа  вначале
+     устанавливает окно,  а затем резервирует буфер,  в котором  будут
+     храниться   и  редактироваться  данные,  вводимые  пользователем.
+     Текстовый   буфер   редактора    представляет    собой    массив,
+     резервирующий  память,  достаточную  для  хранения фиксированного
+     числа  строк,  каждая  из  которых  равна  ширине  области  окна,
+     отводимой  для ввода и редактирования текста.  Например,  если вы
+     установили ширину окна в 42  символа,  то  область  текста  будет
+     иметь ширину 40 символов (рамка окна занимает 2 позиции). Если вы
+     в этом случае отвели под буфер 4000 символов (длина  массива), то
+     редактор   сможет  обрабатывать  одновременно  только  100  строк
+     текста,  так как буфер может содержать не более 100 строк  текста
+     по  40  символов  в  строке.  При  вводе  пользователем текста он
+     накапливается в буфере без специальных символов новой строки (\n)
+     и табуляции (\t).
+
+
+
+
+                                                                      118
+
+          Если текстовый буфер уже содержит текст, который был занесен
+     в него при первом обращении к редактору,  то  этот  старый  текст
+     отображается на экране дисплея в виде строк фиксированной длины в
+     соответствии с описанием окна.
+
+
+                  Команды тестового редактора
+     -----------------------------------------------------------------
+
+          Текстовый редактор    содержит    полный    набор     команд
+     редактирования.  Команды  сведены  в  один  перечень и могут быть
+     отображены на экране дисплея в виде,  представленном  на  рисунке
+     9.1.   В   прошлой  главе  была  рассмотрена  программа,  которая
+     использовала help-окно для выдачи различной информации. Help-окно
+     отображается  при  нажатии  клавиши  <F1>.  Точно  такой же прием
+     используется для отображения набора команд редактора. Большинство
+     из команд редактирования закреплено за функциональными клавишами,
+     остальные используют комбинации клавиш <Ctrl> или <ALT> с другими
+     клавишами. Ниже будут рассмотрены все команды оконного текстового
+     редактора.
+
+     ┌───────────────────────────────────────────────────────────────┐
+     │┌─────────────────────────────────────────────────────────┐    │
+     ││──────Cursor Movement──────────────Page Movement──────── │    │
+     ││arrows = move text cursor  Ctrl-Home = Beginning of File │    │
+     ││Ctrl-T = Top of Window     Ctrl-End  = End of File       │    │
+     ││Ctrl-B = Bottom of Window  PgUp      = Previous Page     │    │
+     ││Ctrl ->= Next Word         PgDn      = Next Page         │    │
+     ││Ctrl <-= Previons Word                                   ├┐   │
+     ││Home   = Beginning of Line ────────Editor control─────── ││   │
+     ││End    = End of Line       Scroll Lock = No Auto Reform  ││   │
+     ││                                                         ││   │
+     ││                                                         ││   │
+     ││───────Block controls───────────────Edit commands─────── ││   │
+     ││F4  = Form Paragraph       F2 or Esc = Done              ││   │
+     ││F5  = Mark Block Beginning F3        = Erase File        ││   │
+     ││F6  = Mark Block End       Ins       = Togle Insert Mode ││   │
+     ││F7  = Move Block           Del       = Delete Char       ││   │
+     ││F8  = Copy Block           <--       = Rubout            ││   │
+     ││F9  = Delete Block         Ctrl-D    = Delete Word       ││   │
+     ││F10 = Unmark Block         Alt-D     = Delete Line       ├┘   │
+     ││ [Help] to return                                        │    │
+     │└─────────────────────────────────────────────────────────┘    │
+     │                                                               │
+     │                                                               │
+     │                                                               │
+     └───────────────────────────────────────────────────────────────┘
+
+               Рис. 9.1. Команды текстового редактора
+
+
+                       Управление курсором
+     -----------------------------------------------------------------
+
+          Используя клавиши управления курсором,  его можно перемещать
+     по всему экрану.  Если вы переместили курсор в начало или в конец
+     экрана  и  продолжаете нажимать клавишу перемещения курсора вверх
+     (или вниз), то тем самым вы инициируете скроллинг текста, который
+     будет продолжаться до достижения начала (конца) буфера данных.
+
+       - <Ctrl/Т>  и <Ctrl/В> перемещают буфер в начало и конец экрана;
+
+       - <Ctrl/(курсор  вправо)> перемещает курсор в начало следующего
+               слова в буфере хранения текста;
+                                                                      119
+
+       - <Ctrl/(курсор влево)> перемещает курсор в  начало предыдущего
+               слова в буфере хранения текста;
+
+       - <курсор  в  начало  экрана>  позиционирует  курсор  в  начало
+               текущей строки;
+
+       - <КОН> позиционирует курсор в конец текущей строки;
+
+       - <ТАБ> перемещает курсор к следующей позиции табуляции;
+
+       - <РЕГИСТР/ТАБ> перемещает курсор к предыдущей позиции
+               табуляции.
+
+
+                       Постраничная работа
+     -----------------------------------------------------------------
+
+          - <Страница  вверх>  и  <Страница  вниз> перемещает текст на
+                страницу вперед или назад;
+
+          - <Ctrl/(курсор в начало  экрана)>  устанавливает  текст  на
+               первую  страницу,  позиционируя курсор в первой позиции
+               первой строки текста;
+
+          - <Ctrl/КОН> устанавливает текст  на  последнюю  страницу  в
+               буфере  и позиционирует курсор в первой позиции строки,
+               которая следует за последней строкой текста в буфере.
+
+
+
+                    Команды работы с блоками текста
+     -----------------------------------------------------------------
+
+          Текстовый редактор  имеет  в  своем составе команды работы с
+     блоками текста.  Эти  команды  позволяют  оперировать  с  блоками
+     текстов, которые определены ограничительными линиями.
+
+          - <F4> формирует параграф из текста, помеченного как блок;
+
+          - <F5> помечает   первую  строку  блока.  Строка  текста,  в
+                 которой находится курсор,  становится первой  строкой
+                 блока.  Текст, образующий блок, отображается в цвете,
+                 определяемом значением параметра ACCENT  для  данного
+                 окна;
+
+          - <F6> помечает последнюю строку блока текста;
+
+          - <F7> перемещает   весь  блок  текста  к  строке текста,  в
+                 которой   расположен   в   данный   момент    курсор.
+                 Перемещение  блока  происходит  без  его  разрушения;
+                 пространство   для   размещения   блока    выделяется
+                 автоматически;
+
+          - <F8> копирует  блок к текущей строке текста.  Отличие этой
+                 команды от предыдущей в том, что настоящая команда не
+                 приводит  к разрушению блока-оригинала на его прежнем
+                 месторасположении в тексте.
+
+          - <F9> уничтожает   блок.  Строки   текста,   следующие   за
+                 удаленным   блоком,   перемещаются   вверх,  заполняя
+                 освободившееся пространство в тексте;
+
+          - <F10> отменяет маркировку фрагмента текста как блока.
+
+                                                                      120
+
+                     Команды редактирования
+     -----------------------------------------------------------------
+
+          После того,  как  вы  ввели  текст и осуществили перемещение
+     курсора, редактор автоматически переформатирует текущий параграф.
+     Редактор   определяет   параграф   как   группу   строк   текста,
+     начинающуюся   с   первой   строки,   состоящей   из    пробелов.
+     Переформатирование  параграфов  может  подавляться  путем нажатия
+     перечисленных ниже клавиш в режиме (Scroll Lock):
+
+          - <F3> уничтожает весь текст, хранящийся в буфере "Команда".
+              Команда требует подтверждения;
+
+          - <INS>  переключает режимы работы редактора Вставка/Замена,
+              а также  изменяет  форму  курсора,  индицирующего  режим
+              работы редактор;
+
+          - <DEL>  уничтожает  символ,  находящийся  после  курсора  в
+              тексте,  перемещая весь текст в строке на  одну  позицию
+              влево;
+
+          - Забой  <Backspace>  (длинная стрелка в правом верхнем углу
+              клавиатуры)   уничтожает   символ,   находящийся   левее
+              курсора,  перемещая  сам  курсор и весь следующий за ним
+              текст строки на одну позицию влево;
+
+          - <Ctrl/D>  (<CTRL/D>)  уничтожает  слово,   перед   которым
+              позицирован курсор;
+
+          - <ALT/D>   уничтожает   строку   текста,   в   которой  был
+              предварительно позицирован курсор;
+
+          - <F2> или <ESC> приводит к выходу из текстового редактора в
+              точку его вызова из главной программы.
+
+
+
+                Функция, реализующая текстовый редактор
+     -----------------------------------------------------------------
+
+          Текстовый редактор  реализован  в  виде  отдельной  функции,
+     которую  может  вызвать  ваша  программа.  Для использования этой
+     функции вы должны вначале  организовать  окно,  в  которое  будут
+     вводиться и в котором будут обрабатываться текстовые данные.
+
+       void text_editor (WINDOW *wnd, char *bf, unsigned bsize)
+
+          Эта функция обрабатывает текстовые данные, вводимые в окно с
+     помощью  текстового  редактора.   Указатель   wnd   специфицирует
+     предварительно  установленное вами окно.  Указатель bf определяет
+     текстовый буфер, а целое число bsize специфицирует размер буфера.
+     Количество строк в буфере является функцией, зависящей от размера
+     буфера и размеров (ширины) окна,  которые устанавливаются,  когда
+     вы организуете окно.
+
+          При вызове  функции  она отображает текст,  начиная с первой
+     страницы из текстового буфера,  и позволяет  как  ввод  текстовых
+     данных,  так  и  ввод  команд редактирования и обработки текста с
+     клавиатуры.  При выходе из текстового  редактора  буфер  содержит
+     введенный или модифицированный пользователем текст.
+
+
+
+
+                                                                      121
+                    Исходный листинг: editor.c
+     -----------------------------------------------------------------
+
+          Листинг 9.1  содержит  исходный  текст  оконного  текстового
+     редактора.
+
+     Листинг 9.1: editor.c
+
+     /* ------------------------- editor.c ------------------------ */
+
+     #include <stdio.h>
+     #include <ctype.h>
+     #include <mem.h>
+     #include <conio.h>
+     #include <alloc.h>
+     #include "twindow.h"
+     #include "keys.h"
+
+     #define TRUE 1
+     #define FALSE 0
+     #define TAB 4
+     #define NEXTTAB (TAB-(x%TAB))
+     #define LASTTAB (((wwd-1)/TAB)*TAB)
+     #define PREVTAB (((x-1)%TAB)+1)
+     #define curr(x,y) (bfptr+(y)*wwd+(x))
+     #define lineno(y) ((int)(bfptr-topptr)/wwd+(y))
+
+     extern int VSG;
+     int last_x, last_y;
+     static int wht;
+     static int wwd;
+     static int wsz;
+     static char *topptr;
+     static char *bfptr;
+     static char *lstptr;
+     static int lines;
+     static char *endptr;
+     static int blkbeg;
+     static int blkend;
+     static int inserting;
+     static WINDOW *wnd;
+     static int do_display_text =1;
+
+     /* ---------- local function prototypes ----------- */
+     void erase_buffer(int *x, int*y);
+     int lastword(int x, int y);
+     void last_char(int *x, int *y);
+     void test_para(int x, int y);
+     int traling_spaces(int);
+     int first_wordlen(int y);
+     void paraform(int x, int y);
+     int blankline(int line);
+     void delete_word(int x, int y);
+     void delete_line(int y);
+     void delete_block(void);
+     void copy_block(int y);
+     void move_block(int y);
+     void mvblock(int y, int moving);
+     void findlast(void);
+     void find_end(int *x, int *y);
+     void carrtn(int *x, int *y, int insert);
+     void backspace(int *x, int *y);
+     void fore_word(int *x, int *y, char *bf);
+
+
+                                                                      122
+
+     int spaceup(int *x, int *y, char **bf);
+     void back_word(int *x, int *y, char *bf);
+     int spacedn(int *x, int *y, char **bf);
+     void forward(int *x, int *y);
+     int downward(int *y);
+     void upward(int *y);
+     void display_text(void);
+     void disp_line(int y);
+     void insert_line(void);
+
+     /* ----- Process text entry for a window. ----- */
+     void text_editor(WINDOW *wnd1, char *bf, unsigned bsize)
+     {
+         char *b, *buff;
+         int depart = FALSE, i, c;
+         int x, y, svx, svlw, tx, tabctr = 0;
+
+         wnd = wnd1;
+         wht = HEIGHT-2;
+         wwd = WIDTH-2;
+         topptr = bfptr = bf;
+         lines = bsize / wwd;
+         endptr = bf + wwd * lines;
+         blkbeg = 0;
+         blkend = 0;
+         inserting = FALSE;
+         x = 0;
+         y = 0;
+         display_text();
+     /* --------- read in text from the keyboard ---------- */
+     findlast();
+     while (TRUE)    {
+         last_x = COL + 1 + x;
+         last_y = ROW + 1 + y;
+         cursor(last_x, last_y);
+         buff = curr(x, y);
+         if (tabctr) {
+             --tabctr;
+             c = ' ';
+         }
+         else    {
+             c = get_char();
+             clear_message();
+         }
+         switch (c)  {
+             case '\r': carrtn(&x, &y, inserting);
+                        break;
+             case DN:  downward(&y);
+                        break;
+             case PGUP: y = 0;
+                        for (i = 0; i < wht; i++)
+                            upward(&y);
+                        break;
+             case PGDN: y = HEIGHT - 2;
+                        for (i = 0; i < wht; i++)
+                            downward(&y);
+                        y = 0;
+                        break;
+             case '\t': if (x + NEXTTAB < wwd)  {
+                            if (inserting)
+                                tabctr = NEXTTAB;
+                            else
+                                x += NEXTTAB;
+                         }
+                                                                      123
+
+                         else
+                             carrtn(&x, &y, inserting);
+                         break;
+             case SHIFT_HT:
+                         if (x < TAB )    {
+                             upward(&y);
+                             x = LASTTAB;
+                            }
+                            else
+                                x -= PREVTAB;
+                            break;
+
+                case CTRL_FWD:
+                            fore_word(&x, &y, buff);
+                            break;
+                case CTRL_BS:
+                            back_word(&x, &y, buff);
+                            break;
+                case CTRL_B:
+                            y = wht - 1;
+                            break;
+                case CTRL_T:
+                            y = 0;
+                            break;
+                case CTRL_HOME:
+                            x = y = 0;
+                            bfptr = topptr;
+                            display_text();
+                            break;
+                case HOME:  x = 0;
+                            break;
+                case CTRL_END:
+                            find_end(&x, &y);
+                            display_text();
+                            break;
+                case END:   last_char(&x, &y);
+                            break;
+
+                case UP:    upward(&y);
+                            break;
+
+
+                case F2:
+                case ESC:   depart = TRUE;
+                            break;
+                case '\b':
+                case BS:    if (curr(x, y) == topptr)
+                            break;
+                            backspace(&x, &y);
+                            if (x == wwd - 1)
+                                last_char(&x, &y);
+                            if (c == BS)
+                                break;
+                            buff = curr(x, y);
+                case DEL:   movmem(buff+1, buff, wwd-1-x);
+                            *(buff+wwd-1-x) = ' ';
+                            disp_line(y);
+                            test_para(x+1, y);
+                            break;
+                case ALT_D: delete_line(y);
+                            break;
+                case INS:   inserting ^= TRUE;
+                            insert_line();
+                            break;
+                                                                      124
+
+                case F3:    erase_buffer(&x, &y);
+                            break;
+                case F4:    paraform(0, y);
+                            break;
+                case F5:    blkbeg = lineno(y) + 1;
+                            if (blkbeg > blkend)
+                                blkend = lines;
+                            display_text();
+                            break;
+                case F6:    blkbeg = lineno(y) + 1;
+                            if (blkbeg < blkend)
+                                blkend = 1;
+                            display_text();
+                            break;
+                case F7:    move_block(y);
+                            break;
+                case F8:    copy_block(y);
+                            break;
+                case F9:    delete_block();
+                            break;
+                case F10:   blkbeg = blkend = 0;
+                            display_text();
+                            break;
+                case FWD:   forward(&x, &y);
+                            break;
+                default:    if (!isprint(c))
+                                break;
+                            if (curr(x, y) == endptr-1 ||
+                               (lineno(y)+1 >= lines && inserting
+                                    && *curr(wwd-2, y) != ' ')) {
+                                error_message(" End of Buffer ");
+                                break;
+                            }
+                            if (inserting)  {
+                                 buff = curr(x, y);
+                                 movmem(buff, buff + 1, wwd-1-x);
+                            }
+                            buff = curr(x, y);
+                            if (buff < endptr)  {
+                                if (buff >= lstptr)
+                                    lstptr = buff + 1;
+                                *buff = c;
+                                disp_line(y);
+                            }
+                            buff = curr(wwd-1, y);
+                            if (endptr && *buff != ' ') {
+                                for (b = buff+1; b < endptr; b++)
+                            if (*b==' ' && *(b + 1)==' ')
+                                          break;
+                                movmem(buff+1, buff+2, b-buff-1);
+                            *(buff+1) = ' ';
+                            svx = x;
+                            svlw = lastword(x, y);
+                            x = wwd-1;
+                            if (*(buff-1) != ' ')
+                                back_word(&x, &y, buff);
+                                tx = x;
+                                carrtn(&x, &y, TRUE);
+                            if (svlw)
+                                x = svx-tx;
+
+
+
+
+                                                                      125
+
+                            else    {
+                                x = svx;
+                                --y;
+                            }
+                      }
+                      forward(&x, &y);
+                      break;
+               }
+               if (depart)
+               break;
+          }
+          inserting = FALSE;
+          insert_line();
+      }
+
+     /* -------- erase the buffer ---------------- */
+     static void erase_buffer(int *x, int *y)
+     {
+         int c = 0;
+         WINDOW *sur;
+
+         sur = establish_window(28, 11, 4, 24);
+         set_colors(sur, ALL, RED, YELLOW, BRIGHT);
+         display_window(sur);
+         wprintf(sur, " Erase text window\n Are you sure? (y/n)");
+         while (c != 'y' && c != 'n')    {
+             c = get_char();
+             c = tolower(c);
+             if (c == 'y')   {
+                 lstptr = bfptr =topptr;
+                 *x = *y = 0;
+                 setmem(bfptr, lines * wwd, ' ');
+                 blkbeg = blkend = 0;
+                 display_text();
+             }
+         }
+         delete_window(sur);
+      }
+     /* ----- see if a word is the last word on the line ------ */
+     static int lastword(int x, int y)
+     {
+         char *bf = curr(x, y);
+
+         while (x++ < wwd-1)
+             if (*bf++ == ' ')
+                 return 0;
+         return 1;
+
+      }
+     /* str 188 */
+     /* --- go to last displayable character on the line --- */
+     static void last_char(int *x, int *y)
+     {
+         char *bf;
+
+         *x = wwd-1;
+         bf = curr(0, *y);
+         while(*x && *(bf + *x) == ' ')
+              --(*x);
+         if (*x && *x < wwd-1)
+              (*x)++;
+     }
+
+
+                                                                      126
+
+     /* ----- test to see if paragraph should be reformed  ----- */
+     static void test_para(int x, int y)
+     {
+         int ts, fw;
+
+         if(!scroll_lock() && y < lines)    {
+              ts= trailing_spaces(y);
+              fw = fierst_wordlen(y+1);
+              if (fw && ts > fw)
+                   paraform(x, y);
+         }
+     }
+
+     /* ---- count the trailing spaces on a line ----- */
+     static int trailing_spaces(int y)
+     {
+         int x = wwd-1 ,ct = 0;
+         char *bf=curr(0, y);
+
+         while (x >= 0)  {
+             if (*(bf + x) != ' ')
+                 break;
+             --x;
+             ct++;
+         }
+         return ct;
+     }
+
+     /* ----- count the length of the first word on a line --- */
+     static int fiest_wordlen(int y)
+     {
+         int ct = 0, x = 0;
+         char *bf = curr(0, y);
+
+         while (x < wwd-1 && *(bf+x) == ' ')
+              x++;
+         while (x+ct < wwd-1 && *(bf+x+ct) == ' ')
+              ct++;
+         return ct;
+     }
+
+     /*----------------- form a paragraph -------------------- */
+     static void paraform(int x, int y)
+     {
+         char *cp1, *cp2, *cpend, *svcp;
+         int x1;
+
+         if (blankline(lineno(y)+1))
+              return;
+         if (!blkbeg) {
+              blkbeg = blkend = lineno(y)+1;
+              blkend++;
+              while(blkend < lines) {
+                   if (blankline(blkend))
+                        break;
+                   blkend++;
+              }
+              --blkend;
+         }
+
+
+
+
+
+                                                                      127
+
+         if(lineno(y) != blkend-1 )
+              x=0;
+         x1=x;
+         cp1=cp2=topptr + (blkend-1) * wwd + x;
+         cpend = topptr + blkend * wwd;
+         while(cp2 < cpend){
+              while(*cp2 == ' ' && cp2 < cpend)
+                        cp2++;
+
+              if(cp2 == cpend)
+                   break;
+              /* at a word */
+              while(*cp2 != ' ' && cp2 < cpend) {
+                   if(x1 >= wwd-1)  {
+                        /* wrap the word */
+                        svcp = cp1 + (wwd - 1);
+                        while(*--cp1 != ' ') {
+                             *cp1 = ' ';
+                             --cp2;
+                        }
+                        x1 = 0;
+                        blkbeg++;
+                        cp1 = svcp;
+                    }
+                    *cp1++ = *cp2++;
+                    x1++;
+                 }
+                 if(cp2 < cpend) {
+                          *cp1++ = ' ';
+                          x1++;
+                 }
+              }
+              while(cp1 < cpend)
+                   *cp1++ = ' ';
+                     blkbeg++;
+              if(blkbeg <= blkend)
+                   delete_block();
+              blkbeg =blkend =0;
+              display_text();
+              findlast();
+         }
+
+     /* ------------ test for a blank line ---------------- */
+     static int blankline(int line)
+     {
+         char *cp;
+         int x;
+
+             cp = topptr + (line-1) * wwd;
+         for(x=0; x < wwd; x++)
+              if(*(cp+x) != ' ')
+                   break;
+         return(x == wwd );
+     }
+
+     /*------------ delete a word ------------------------ */
+     static void delete_word(int x, int y)
+     {
+         int wct = 0;
+         char *cp1, *cp2;
+
+
+
+
+                                                                      128
+
+         cp1= cp2= curr(x, y);
+         if(*cp2 == ' ')
+              while(*cp2 == ' ' && x+wct < wwd) {
+                   wct++;
+                   cp2++;
+              }
+         else {
+              while(*cp2 != ' ' && x+wct < wwd) {
+                   wct++;
+                   cp2++;
+              }
+              while(*cp2 == ' ' && x+wct < wwd) {
+                   wct++;
+                   cp2++;
+              }
+                  }
+         movmem(cp2, cp1, wwd-x-wct);
+         setmem(cp1+wwd-x-wct, wct, ' ');
+             dispay_text();
+         findlast();
+     }
+
+     /*------------------ delete a line -----------------*/
+     static void delete_line(int y)
+     {
+         char *cp1, *cp2;
+         int len;
+
+             cp1=bfptr + y + wwd;
+         cp2=cp1 + wwd;
+         if(cp1<lstptr) {
+              len=endptr - cp2;
+              movmem(cp2, cp1, len);
+              lstptr -= wwd;
+              setmem(endptr-wwd, wwd,' ');
+              display_text();
+         }
+     }
+
+     /*---------- delete a block --------------------*/
+     static void delete_block()
+     {
+         char *cp1, *cp2;
+         int len;
+
+             if(!blkbeg  || !blkend) {
+              putchar(BELL);
+              return;
+         }
+         cp1=topptr + blkend * wwd;
+         cp2=topptr + (blkend-1) * wwd;
+         len=endptr - cp1;
+         movmem(cp2, cp1, len);
+         setmem(cp2+len, endptr-(cp2+len), ' ');
+         blkbeg = blkend = 0;
+         lstptr-=(cp1 - cp2);
+         display_text();
+     }
+
+
+
+
+
+
+                                                                      129
+
+     /*----------- move and copy text blocks --------------*/
+     static void mvblock(int y , int moving)
+     {
+         char *cp1, *cp2, *hd;
+         int len;
+         if(!blkbeg || ! blkend) {
+              putchar(BELL);
+              return;
+         }
+         if(lineno(y) > blkbeg-1 && lineno(y) <= blkend-1) {
+              error_message("Can't move/copy a blok into itself");
+              return;
+         }
+         len=(blkend - blkbeg + 1) * wwd;
+         if((hd=malloc(len)) == 0)
+              return;
+         cp1 = topptr + (blkbeg + 1) * wwd;
+         movmem(cp1, hd, len);
+         cp2 = topptr + lineno(y) * wwd;
+         if (moving) {
+              if(lineno(y) > blkbeg-1)
+                   cp2 -= len;
+              do_display_text =0;
+              delete_block();
+              do_display_text =1;
+         }
+         if(cp2+len <= endptr) {
+              movemem(cp2, cp2 + len, endptr - cp2 - len);
+                     movemem(hd, cp2, len);
+         }
+         free(hd);
+         blkbeg = blkend = 0 ;
+         display_text();
+     }
+
+
+     /*------------ copy a block -----------------------*/
+     static void copy_block(int y)
+     {
+         mvblock(y, FALSE);
+         findlast();
+     }
+
+     /*------------------- move a block -----------------*/
+     static void move_block(int y)
+     {
+         mvblock(y, TRUE);
+     }
+
+     /*-------- find the last  caracter in the buffer -------*/
+     static void findlast()
+     {
+         register char *lp = endptr - 1;
+         register char *tp = topptr;
+
+             while(lp > tp && (*lp == ' ' || *lp == '\0'))  {
+              if (*lp == '\0')
+                   *lp = ' ';
+              --lp;
+             }
+             if(*lp != ' ')
+                lp++;
+             lstptr = lp;
+     }
+                                                                      130
+
+     /*------- go to end of the data in the buffer ---------*/
+     static void find_end(int *x, int *y)
+     {
+         int ct;
+
+             bfptr = lstptr;
+         ct = (lstptr - topptr) % wsz;
+         bfptr -= ct;
+         if (bfptr + wsz > endptr)
+              bfptr = endptr - wsz;
+         *x = 0;
+         *y = (ct / wwd);
+         downward(y);
+     }
+
+     /*---------------------carriage return ----------------*/
+     static void carrtn(int *x, int *y, int insert)
+     {
+         int insct;
+         char *cp, *nl;
+         int ctl = 2;
+
+             cp = curr(*x, *y);
+         nl = cp + ((cp - topptr) % wwd);
+         if (lineno(*y)+2 < lines)
+              if (insert && nl < endptr) {
+                   insct = wwd - *x;
+                   while (ctl--)   {
+                       if (endptr > cp + insct) {
+                          movemem(cp, cp+insct, endptr-insct-cp);
+                          setmem(cp, insct, ' ');
+                       }
+                       else if(ctl == 1)
+                           setmem(cp, endptr - cp, ' ');
+                       cp += insct * 2;
+                        insct= *x;
+                   }
+              }
+         *x = 0;
+         downward(y);
+         if (insert) {
+              testpara(*x, *y);
+              display_text();
+         }
+         if (lineno(*y)+2 < lines)
+              if (insert)
+                   if ((lstptr + wwd) <= endptr)
+                        if(lstptr > curr(*x, *y))
+                             lstptr += wwd;
+     }
+     /* ------- move the buffer offset back one position ------ */
+     static void backspase(int *x, int *y)
+     {
+         if (*x == 0)    {
+             *x = wwd - 1;
+             upward(y);
+         }
+         else
+             --(*x);
+     }
+
+
+
+
+                                                                      131
+
+     /* ------- move the buffer offset forward one word  ------ */
+     static void fore_word(int *x, int *y, char *bf)
+     {
+         while (*bf != ' ')  {
+             if (spaceup(x, y, &bf) == 0)
+                 return;
+             if (*x == 0)
+                 break;
+         }
+         while (*bf == ' ')
+             if (spaceup(x, y, &bf) == 0)
+                 return;
+     }
+     static int spaceup(int *x, int *y, char **bf)
+     {
+         if (*bf == lstptr)
+             return 0;
+
+         (*bf)++;
+         forward(x, y);
+         return 1;
+     }
+     /* ------- move the buffer offset backrward one word  ------ */
+     static void back_word(int *x, int *y, char *bf)
+     {
+         spacedn(x, y, &bf);
+         while (*bf == ' ')
+             if (spacedn(x, y, &bf) == 0)
+                 return;
+         while (*bf != ' ')  {
+             if (*x == 0)
+                 return;
+             if (spacedn(x, y, &bf) == 0)
+                 return;
+         }
+         spaceup(x, y, &bf);
+                 return;
+     }
+     static int spacedn(int *x, int *y, char **bf)
+     {
+         if (*bf == topptr)
+             return 0;
+         --(*bf);
+         backspace(x, y);
+         return 1;
+     }
+     /* ------- move the buffer offset forward one position ------ */
+     static void backspace(int *x, int *y)
+     {
+         if (*x == 0)    {
+            *x = wwd - 1;
+            upward(y);
+         }
+         else
+            --(*x);
+     }
+
+
+
+
+
+
+
+
+                                                                      132
+
+   /* ---------------------------------------------------------------- */
+     static void forward(int *x, int *y)
+     {
+         int ww = wwd;
+
+         (*x)++;
+         if (*x == ww)    {
+             downward(y);
+             *x = 0;
+         }
+     }
+     /* ------- move the buffer offset down one position ------ */
+     static int downward(int *y)
+     {
+         if (*y < wht - 1)    {
+         (*y)++;
+         return 1;
+         }
+         else if ((bfptr + wsz) < endptr)    {
+             bfptr += wwd;
+             scroll(wnd, UP);
+             disp_line(wht-1);
+             return 1;
+         }
+         return 0;
+     }
+     /* --------- move the buffer offset up one position ------ */
+     static void upward(int *y)
+     {
+         if (*y)        /*    !!!!!!!!!!!    */
+            --(*y);
+         else if ((topptr + wwd) <= bfptr)    {
+             bfptr -= wwd;
+             scroll(wnd, DN);
+             disp_line(0);
+         }
+     }
+     /* ---- display all the lines in a window ------ */
+     static void display_text()
+     {
+         int y = 0;
+
+         if (do_display_text)
+             while (y < wht)
+             disp_line(y++);
+     }
+     /* ---------- Display a line -------- */
+     static void disp_line(int y)
+     {
+         int x = 0, atr = WNORMAL;
+
+         if (blkbeg || blkend)
+             if (lineno(y) >= blkbeg-1)
+                 if (lineno(y) <= blkend-1)
+                     atr = WACCENT;
+
+         while (x < wwd) {
+             displine(wnd, x+1, y+1, *(bfptr+y * wwd+x), atr);
+             x++;
+         }
+     }
+
+
+
+                                                                      133
+
+   /*--------- set insert /exchange cursor shape -----------*/
+     static void insert_line()
+     {
+         set_cursor_type(inserting ? 0x0106 : 0x0607);
+     }
+
+
+                 Описание программы: editor.c
+     -----------------------------------------------------------------
+
+          Программа  editor.c содержит ряд операторов #define, которые
+     управляют установкой позиции табуляции в окне редактора. Значение
+     глобальной переменной ТАВ определено равным 4,  что устанавливает
+     позицию табуляции в четыре любых  символа.  Остальные  глобальные
+     переменные    -    NEXTAB,   LASTTAB   и   PREVTAB   -   являются
+     макровыражениями,  позволяющими улучшить  удобочитаемость  текста
+     программы  в целом.  Макрос curr возвращает указатель на символ в
+     буфере редактирования в зависимости от значения его  координат  в
+     окне,  задаваемых  аргументами  X  и Y.  Макрос lineno возвращает
+     номер  строки  в  буфере,  который  соответствует  относительному
+     номеру  строки в окне редактора,  задаваемого значением аргумента
+     y.
+
+          Некоторые переменные,  объявленные  как  external,  являются
+     вычисляемыми  и  предназначены  прежде всего для сокращения числа
+     вычислительных операций в тексте программы,  что  делает  листинг
+     более  удобочитаемым.  Переменная  wht  принимает значение высоты
+     максимально возможной области в окне,  отводимой под  текст;  при
+     вычислении  значения  wht  делается коррекция на наличие символов
+     рамки окна.  Переменная wwd принимает значение ширины максимально
+     возможной области, отводимой под текст, с учетом наличия символов
+     рамки  окна.  Переменная  wsz  содержит  размер   области   окна,
+     отводимой  под текст.  Переменная lines содержит количество строк
+     текста, которые могут быть сохранены в текстовом буфере. Параметр
+     endptr является указателем на позицию последнего символа в буфере
+     плюс единица.  Значение lstptr - указатель на последний, отличный
+     от пробела, символ, хранящийся в буфере. Значение topptr является
+     указателем на первый символ, хранящийся в буфере. Указатель bfptr
+     используется  при  листании  текста  постранично  или  скроллинга
+     текста;  он всегда указывает на символ в буфере текста, который в
+     данный момент отображается в левом верхнем углу окна.
+
+          Функция text_editor  вызывается в случае,  если пользователю
+     понадобилось вводить или модифицировать  текст  в  буфере.  После
+     инициализации   функции   происходит  вычисление  соответствующих
+     значений переменных, и курсор устанавливается в начальную позицию
+     с   координатами   (0,0).  При  вводе  пользователем  символов  с
+     клавиатуры автоматически осуществляется проверка ввода на наличие
+     прерываний  от функциональных клавиш и управляющих сигналов.  При
+     нажатии пользователем  клавиши  <ВВОД>  автоматически  вызывается
+     функция  carrtn.  Нажатие  клавиши  управления  курсором <Стрелка
+     вниз>  приведет  к  вызову  функции  downward.   Нажатие   клавиш
+     <Страница  вверх>  и  <Страница  вниз>  приведут к вызову функций
+     upward или downward соответственно для обработки  отображенных  в
+     окне строк текста. Клавиши <TАВ> и <SHIFT/TAB>) вызовут изменение
+     значения текущей координаты X  курсора,  переместив  последний  в
+     следующую или предыдущую позицию табуляции. Клавиши <Ctrl/стрелка
+     вправо> приведут  к  вызову  функций  fore_word   или   back_word
+     соответственно. <Ctrl/В>   приведет   к  изменению  координаты  у
+     курсора,  позиционировав его  в  нижней  части  экрана.  <Ctrl/Т>
+     позиционирует курсор в верхней части экрана, изменяя значение его
+     координаты Y.  <Ctrl/Home> приведет к перемещению курсора в точку
+     с    координатами    (0,0)   (изменив   соответственно   значения
+
+                                                                      134
+
+     координатных аргументов курсора X и  Y),  переопределит  значение
+     bfptr  на  адрес начала буфера и вызовет функцию display_text для
+     выдачи новой информации на экран из  буфера.  Клавиша  <Курсор  в
+     начало экрана>    (<Home>)   обнуляет   координату   курсора   X.
+     <Ctrl/END>) использует функцию  find_end  для  поиска  последнего
+     символа в  буфере  и  выдачи  текста  на экран.  <END> использует
+     функцию find_end для позиционирования курсора  (и  изменения  его
+     координаты X)  в конце текущей строки текста.  <Up arrow> вызовет
+     функцию upward. Нажатие <F2> или <ESC> сигнализирует о завершении
+     ввода текста.  <Left arrow> и <Backspace>) приводят к перемещению
+     курсора  на  одну  позицию  влево,  вызывая  для  этого   функцию
+     backspace. Клавиша   <Забой>   (<Backspace>)  в  этом  случае  не
+     генерирует в  программе  кода,  соответствующего  клавише  <DEL>,
+     которая уничтожает символ в позиции курсора,  обращаясь для этого
+     к функции movmem. <ALT/D> приводит к вызову delete_line. <Ctrl/D>
+     вызывает функцию  delete  _word.  Клавиша  <INS> переключает флаг
+     inserting и вызывает  функцию  insert_line  для  изменения  формы
+     курсора.  <F3>  вызывает  erase_buffer.  <F4>  вызывает paraform.
+     Клавиши <F5> и <F6> устанавливают значения  переменных  blkbeg  и
+     blkend  для  текущей  строки  текста.  Эти  же клавиши приводят к
+     обращению к функции display_text для отображения блока  текста  в
+     инверсном  режиме.  Клавиши  <F7>,  <F8> и <F9> приводят к вызову
+     функций move_ block,  copy_block и  delete_block  соответственно.
+     Клавиша  <F10>  обнуляет  значения  переменных  blkbeg и blkend и
+     вызывает функцию display_text.  Нажатие клавиши <Стрелка  вправо>
+     (<Right arrow>) приводит к вызову функции forward.  Если вводимый
+     пользователем символ отличается от рассмотренных выше  и является
+     одним  из  отображаемых  символов кода ASCII,  то он копируется в
+     буфер.  При этом вначале анализируется ситуация  на  переполнение
+     буфера  в  результате  ввода символа (ввод символа может привести
+     впоследствии к выходу за пределы  буфера  точно  так  же,  как  и
+     вставка   символа  в  режиме  ВСТАВКА  может  привести  к  потере
+     последнего символа  результата  операции).  Затем,  если  включен
+     режим  ВСТАВКА,  текущая строка сдвигается на один символ вправо,
+     после  чего  символ  записывается  в  буфер.  Если  в  результате
+     добавления  символа  в  буфер  был  внесен  последний символ,  то
+     указатель lstptr соответственно корректируется,  и текущая строка
+     отображается   на   экране  дисплея.  Далее  функция  анализирует
+     состояние "конец слова".  Если последний символ строки отличен от
+     пробела,   то  очередное  слово  считается  завершенным.  Функция
+     сканирует  буфер  с  начала  до  конца  (от  младшего  адреса  по
+     возрастанию  адресов) до тех пор,  пока не достигнет конца буфера
+     или не  обнаружит  двух  следующих  подряд  пробелов.  Затем  она
+     сдвигает  текст  на  одну  позицию  вправо,  начиная со следующей
+     строки относительно  строки  текста,  в  которой  обнаружен  факт
+     завершения слова. Таким образом, эта процедура создает промежуток
+     между  завершенным  (законченным)  словом  и  текстом   следующей
+     строки.  Функция  lastword вызывается для анализа нового символа,
+     если он является символом,  вводимым в последнее слово,  или если
+     факт  завершения  очередного  слова  явился результатом вставки в
+     предыдущее слово строки. Эта проверка осуществляется программой в
+     случае  изменения  местоположения курсора после обнаружения конца
+     слова.  Результат такой проверки запоминается в переменной  svlw.
+     Координата X принимает значение конца строки текста. Если символ,
+     предшествующий последнему символу,  отличен от  пробела,  то  для
+     позиционирования  курсора  в начале следующего слова (и изменения
+     координаты X)  используется  функция  back_word.  Функция  carrtn
+     вызывается   для   логической  вставки  новой  строки  в  текущей
+     X-позиции.   (На   самом   деле   физической    вставки    строки
+     непосредственно  в  буфер  не  происходит в силу того,  что буфер
+     представляет собой обычный двумерный массив  прямоугольной формы.
+     Поэтому  осуществляется  лишь  сдвиг текста и освобождение внутри
+     него пространства).  Курсор позиционируется на символе, следующим
+
+                                                                      135
+
+     за  символом,  непосредственно  добавленным  в буфер.     Функция
+     forward вызывается,  не обращая внимания даже на  факт  окончания
+     слова, для коррекции координаты X.
+
+          Функция erase_buffer   открывает   окно   и   запрашивает  у
+     пользователя разрешение на выполнение команды очистки (erase). По
+     соглашению  пользователя  функция  очищает буфер и переопределяет
+     значения всех переменных и указателей.
+
+          Функция lastword проводит анализ координаты  X  расположения
+     курсора в последнем слове строки, определяемой координатой Y.
+
+          Функция last_char  переопределяет  координату Y расположения
+     курсора,  присваивая ей  значение на единицу больше,  чем позиция
+     расположения  последнего отображаемого символа  в строке.
+
+          Функция test_para    вызывается   в   случае   необходимости
+     переформатирования  параграфа  для   проверки   возможности   его
+     выполнения. Переключатель   клавиатуры   <Scroll   Lock>   должен
+     находиться в выключенном состоянии  (off),  и  число  завершающих
+     пробелов  текущей  строки текста должно быть больше длины первого
+     слова следующей строки  текста.  Если  это  условие  выполняется,
+     функция  test_para  вызывает функцию paraform,  которая позволяет
+     переформатировать параграф.
+
+          Функция trailing_spaces  осуществляет  подсчет   завершающих
+     пробелов строки текста.
+
+          Функция first_woldlen   подсчитывает   длину  первого  слова
+     следующей строки текста.
+
+          Функция paraform осуществляет  переформатирование параграфа,
+     если,   естественно,   предварительно  параграф  был  отделен  от
+     остального  текста  двумя  пустыми  строками.  Функция   paraform
+     вызывается  в результате нажатия пользователем клавиши <F4> или в
+     результате    работы    функции     test_para,     осуществляющей
+     автоматическое  принятие решения о возможности переформатирования
+     параграфа.  Во всех этих случаях,  если предварительно переменные
+     blkbeg  и  blkend  не получили соответствующих значений для блока
+     текста,  включающего  текущий  параграф,  функция   устанавливает
+     соответствующие  значения  этих  переменных.  Значение переменной
+     blkbeg устанавливается  равным  текущей  строке  текста.  Функция
+     просматривает текст вперед,  начиная с текущей строки, на предмет
+     наличия двух пустых строк (строк,  целиком состоящих из пробелов)
+     или  достижения  конца  буфера,  устанавливая  при  этом значение
+     переменной blkend.
+
+          Переформатирование параграфа     функция     начинает     со
+     сканирования  текста  после  предшествующих  параграфу лидирующих
+     пробелов.  Если  она  обнаружила  непустое  слово,  то  сразу  же
+     начинается  процесс копирования этого слова в начало буфера. Если
+     обнаружен пробел,  то функция логически уничтожает этот пробел. В
+     процессе   копирования  слова  функция  анализирует  ситуацию  на
+     предмет завершения строки текста,  затем  возвращается  в  начало
+     копируемого слова,  вставляет пробелы в буфер и продолжает работу
+     далее.  В  связи  с  этим  возможно  логическое  сжатие  области,
+     занимаемой  группой слов,  путем удаления избыточных пробелов.  В
+     результате работы функции могут быть образованы  одна  или  более
+     пустых   строк,   для   удаления   которых  используется  функция
+     delete_block.
+
+          Функция blank_line   используется   в   том   случае,   если
+     специфицированная  строка целиком состоит из пробелов для анализа
+     строки.
+                                                                      136
+
+          Функция  delete_word уничтожает слово в буфере. Если текущее
+     значение  координаты  месторасположения  курсора X  соответствует
+     пробелу, то функция уничтожает пробел, предшествующий  следующему
+     слову;  таким  образом,  функция  уничтожает  слово,  начиная   с
+     позиции,     специфицированной     кординатой    X,    но   после
+     пробела,  стоящего за предшествующим словом, до начала следующего
+     слова.
+
+          Функция delete_line уничтожает  строку  текста с последующим
+     сдвигом  всего текста.  Вначале  функция вычисляет  адрес первого
+     символа текущей  и  следующей  строки.  Затем  функция определяет
+     объем текста,  который  должен  быть  сдвинут,  как расстояние от
+     следующей (за уничтоженной)  строки до конца буфера текста. После
+     перечисленных   действий   осуществляется   сдвижка   текста,   и
+     переменная lstptr принимает новое значение.  Буфер заполняется до
+     конца избыточными пробелами.
+
+          Функция delete_block  реботает  точно так же,  как и функция
+     delete_line,  однако оперирует с блоком текста,  который содержит
+     более одной строки текста.
+
+          Функция mvblock используется  для  перемещения и копирования
+     блока текста.  Вначале происходит размещение в памяти  буфера для
+     хранения  текста,  и  блок  текста помещается в этот  буфер. Если
+     операция  перемещения  блока  текста  предпочтительнее,  чем  его
+     копирование,  то  вызывается  функция  уничтожения  блока  текста
+     delete_block()  в  буфере  редактора.  Текст  в  буфере редактора
+     смещается вправо,  начиная с текущей строки, освобождая место для
+     блока текста,  который будет перемещен сюда или скопирован на это
+     место.   Текст   из   промежуточного   буфера   перемещается   на
+     освобожденное  после сдвижки  текста  пространство. Промежуточный
+     буфер  удаляется из  памяти и  восстанавливается изображение окна
+     после обращения к функции display_text.
+
+          Функции copy_block и move_block вызываются для копирования и
+     перемещения  блока текста соответственно.  Эти функции используют
+     mvblock для выполнения возложенных на них операций.
+
+          Функция   findlast  организует  поиск  последнего  значащего
+     символа в буфере и устанавливает  указатель  lstptr  на следующую
+     за ним позицию.
+
+          Функция  carrtn  отслеживает  ситуацию  возврата каретки при
+     окончании  строки  текста  внутри  буфера   редактора   вслед  за
+     движением  курсора  пользователя.  Она  вычисляет  адрес  первого
+     символа следующей строки  текста  по  текущей позиции  символа, в
+     которой  позиционирован  курсор.   Если  включен  режим  "Вставка
+     символа",  функция должна обеспечить "раздвигание" строки текста,
+     которое  достигается  смещением  текста,  находящегося  в  буфере
+     редактора,  вправо,  начиная  с  позиции,  в  которой  расположен
+     курсор, к концу текущей строки и заполнения образовавшихся пустот
+     избыточными пробелами.  Новая строка подвергается точно такому же
+     сдвигу и  заполнению  пробелами  до  минимальной  ее  длины после
+     операции вставки.
+
+         Функция  downward   используется  для  отслеживания изменения
+     координат  следующей  (возможно,  новой)  строки  текста  и, если
+     включен режим "Вставка",  для переопределения  значения указателя
+     lstptr.
+          Большинство функций,  к  которым  осуществляется  обращение,
+     используют  прямо  или  косвенно  координаты позиции расположения
+     курсора.   Такими   функциями   являются   find_end,   backspace,
+     fore_word,  spaceup,  back_word,  spacedn,  forward,  downward  и
+     upward.
+                                                                      137
+
+                  Пример: Использование редактора
+     -----------------------------------------------------------------
+
+          Листинги 9.2,  9.3 и 9.4 демонстрируют пример  использования
+     оконного редактора текстов в диалоговой программе.
+
+          Листинг 9.2   содержит   текст   программы  note.c,  которая
+     является главной  функцией,  обращающейся  к  функции  notepad.c,
+     исходный текст которой приведен в листинге 9.3. Функция notepad.c
+     выделена в отдельный файл в связи с тем,  что она используется  в
+     примерах меню (Глава 10) и при описании резидентных утилит (Глава
+     12).
+
+          Листинг 9.4  содержит  пример   make-файла   Турбо   Си,   в
+     соответствии  с  которым  строится  пример использования оконного
+     редактора.
+
+          Функция notepad.c обрабатывает файл, имя которого определено
+     в массиве,  описанном как external.  В данном примере этот массив
+     определен в note.c,  и имя файла указано как note.pad. Если такой
+     файл  уже  существует  на  момент  запуска примера,  то notepad.c
+     считывает его в буфер редактора.
+
+          Notepad.c устанавливает  окно,  заключает   его   в   рамку,
+     присваивает окну название,  назначает цвета для окна и отображает
+     его на экране дисплея.  Затем notepad.c вызывает функцию оконного
+     редактора  text_editor.  По завершении работы функции text_editor
+     notepad.c уничтожает окно и сохраняет строки текста в  буфере,  в
+     который  был  записан  последний  нужный  текст.  Затем notepad.c
+     записывает содержимое буфера в файл (note.pad).
+
+          Листинг 9.2. note.c
+
+     /* ------ note.c ---------*/
+
+     #include "twindow.h"
+
+     void notepad(void);
+     char notefile [] = "note.pad";
+
+     main()
+     {
+       load_help("tcprogs.hlp");
+       notepad();
+     }
+
+
+
+
+     Листинг 9.3: notepad.c
+
+
+     /* ----------------- notepad.c -----------------*/
+
+     #include <stdio.h>
+     #include <mem.h>
+     #include "twindow.h"
+
+     #define LWID 60
+     #define WHT 10
+     #define PADHT 20
+
+     char bf [PADHT] [LWID];
+     extern char notefile[];
+                                                                      138
+
+     void notepad()
+     {
+             WINDOW *wnd;
+             FILE *fp, *fopen();
+             int i, ctr = 0;
+
+             set_help("notepad ",0,0);
+             setmem(bf, sizeof bf, ' ');
+             if ((fp = fopen(notefile, "rt")) != NULL)  {
+                 while (fread(bf [ctr], LWID, 1, fp))
+                     ctr++;
+                 fclose(fp);
+             }
+             wnd = establish_window
+                     ((80-(LWID+2))/2, (25-(WHT+2))/2, WHT+2, LWID+2);
+             set_border(wnd, 3);
+             set_title(wnd, "  Note Pad  ");
+             set_colors(wnd, ALL, BLUE, AQUA, BRIGHT);
+             set_colors(wnd, ACCENT, WHITE, BLACK, DIM);
+             display_window(wnd);
+             text_editor(wnd, bf[0], (unsigned) LWID * PADHT);
+             delete_window(wnd);
+             ctr = PADHT;
+             while (--ctr) {
+                     for (i = 0; i < LWID; i++)
+                             if( bf [ctr] [i] != ' ')
+                                     break;
+                     if (i < LWID)
+                             break;
+             }
+             fp = fopen(notefile, "w");
+             for (i = 0; i < ctr+1; i++)
+                     fwrite(bf[i], LWID, 1, fp);
+             fclose(fp);
+     }
+
+
+
+     Листинг 9.4 note.prj
+
+     note
+     notepad(twindow.h)
+     editor(twindow.h, keys.h)
+     thelp(twindow.h, keys.h)
+     twindow(twindow.h, keys.h)
+     ibmpc.obj
+
+
+
+          Для выполнения примера введите команду
+
+     C > note
+
+          После трансляции  и редактирования ваших программ вы увидите
+     на экране дисплея копию рисунка 9.2.  При первом запуске  примера
+     файл note.pad будет пустым.  После того, как вы введете с помощью
+     редактора какую-либо  информацию,  при  выходе  из  редактора  по
+     клавише <ESC>  или  <F2>  данные будут запомнены в файле note.pad
+     для дальнейшего использования. Естественно, что если вы запомнили
+     текст,  то  при  следующем  выполнении  программы  он  будет  вам
+     отображаться в окне редактора.
+
+
+
+                                                                      139
+
+     ┌───────────────────────────────────────────────────────────────┐
+     │                                                               │
+     │                                                               │
+     │                                                               │
+     │                                                               │
+     │                                                               │
+     │         ┌────────────────  Note Pad ──────────────┐           │
+     │         │The window notepad can be used to record │           │
+     │         │random thoughts, appointments, reminders,│           │
+     │         │and daily activities._                   │           │
+     │         │                                         │           │
+     │         │                                         │           │
+     │         │                                         │           │
+     │         └─────────────────────────────────────────┘           │
+     │                                                               │
+     │                                                               │
+     │                                                               │
+     │                                                               │
+     │                                                               │
+     │                                                               │
+     └───────────────────────────────────────────────────────────────┘
+
+                Рис. 9.2 Пример использования редактора.
+
+
+          При вводе  текста  и  его  дальнейшей  обработке используйте
+     перечень команд, отображенный на рисунке 9.1. Нажав клавишу <F1>,
+     вы можете получить перечень этих команд на экране своего дисплея.
+
+
+
+                             Резюме
+     -----------------------------------------------------------------
+
+          Итак, мы рассмотрели еще  одну  дополнительную  возможность,
+     которая  может  быть  добавлена  в  список  библиотеки  поддержки
+     оконной технологии.  Таким образом,  изученное вами на  настоящий
+     момент   программное   обеспечение   может   использоваться   как
+     функциональное  средство  поддержки   специализированных   задач,
+     ориентированных  на использование оконной технологии. Программное
+     обеспечение  позволяет  организовать  диалоговую  help-поддержку,
+     шаблоны  ввода  данных,  а  также  использовать оконный текстовый
+     редактор.  Следующей дополнительной возможностью,  которая  может
+     вами с успехом применяться,  является иерархическая система меню,
+     используемых в окне.  Эта система меню включает в себя скользящее
+     меню-строку и систему появляющихся меню типа "pop-down" (этот тип
+     меню еще называют "всплывающим",  так как его появление на экране
+     очень напоминает эффект всплытия из "глубины" дисплея) для выбора
+     и выполнения различных функций прикладной программой,  в  которой
+     система меню используется.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                      140

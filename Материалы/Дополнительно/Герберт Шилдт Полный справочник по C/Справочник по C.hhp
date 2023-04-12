@@ -1,0 +1,17 @@
+[OPTIONS]
+Compatibility=1.0
+Compiled file=Справочник по C.chm
+Default Window=Справочник по языку программирования C
+Default topic=main.htm
+Display compile progress=Yes
+Language=0x419 Русский
+
+[WINDOWS]
+Справочник по языку программирования C="Справочник по языку программирования C",,,"main.htm","main.htm",,,,,0x42020,,0x200c,[0,0,640,480],,,,,,,0
+
+
+[FILES]
+main.htm
+
+[INFOTYPES]
+

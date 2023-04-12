@@ -1,0 +1,1825 @@
+<html>
+
+<head>
+   <TITLE>C</TITLE>
+</head>
+
+<body bgcolor="#00ffff">
+<a name="top"></a>
+<p><div align="center"><b><font size="+1" face="Arial"><a name="9">Глава 9. Интерфейс с "мышью". </a></font></b></div></p>
+<span
+style='font-size:10.0pt'>Наиболее популярным устройством ввода данных после
+клавиатуры является &quot;мышь&quot; (mouse). Несмотря на то, что
+&quot;мышь&quot; и сходные технологии, такие как &quot;roller ball&quot;,
+получили широкое распространение лишь в последнее время, популярность
+&quot;мыши&quot; берет свое начало с момента выхода на рынок очередной
+разработки фирмы Apple компьютера Apple Lisa, в котором впервые была применена
+технология &quot;мышь&quot; для работы с пиктограммным (иконным) интерфейсом
+операционной системы этого компьютера. Модель Apple Lisa произвела форменный
+переворот в фирме Macintosh, которая пошла по пути использования
+&quot;мыши&quot; и пиктограммного интерфейса в своих программных продуктах.
+Перед выходом на рынок серии IBM PS/2 &quot;мышь&quot;, по существу, была
+третьим дополнением к РС. Тем не менее уже при анонсировании системы IBM PS/2
+сообщалось, что она снабжена портом для подключения &quot;мыши&quot;, и
+&quot;мышь&quot; занимает значительное место среди РС.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+
+><span
+style='font-size:10.0pt'>Наилучшее использование &quot;мыши&quot; - предмет
+постоянных дискуссий. Не все программисты (или пользователи) воспринимают
+пиктограмный интерфейс. В связи с тем, что &quot;мышь&quot; впервые была
+использована именно с пиктограммным интерфейсом, вопросы использования
+&quot;мыши&quot; чаще всего сводятся именно к нему, а это в, свою очередь,
+отталкивает от &quot;мыши&quot; большой круг программистов, негативно
+относящихся к такому интерфейсу. Однако &quot;мышь&quot; ведь может
+использоваться и без такого интерфейса. Например, практически все согласны с
+тем, что &quot;мышь&quot; эффективно может использоваться при работе с
+интерактивной графикой.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+
+><span
+style='font-size:10.0pt'>Некоторые модели манипуляторов типа &quot;мышь&quot;,
+равно как и выполняемые ими функции, могут значительно отличаться друг от
+друга. Поэтому заметим, что все программы, приведенные в этой главе,
+ориентированы на использование &quot;мыши&quot; фирмы Microsoft, которая
+функционально идентична &quot;мыши&quot;, используемой в моделях PS /2. Для
+обеспечения интерфейса с &quot;мышью&quot; фирмы Microsoft вам необходимо иметь
+по крайней мере саму &quot;мышь&quot;, руководство пользователя по программному
+обеспечению &quot;мыши&quot; (Microsoft Mouse Programmer's Reference Guide) и
+поставляемый с этим руководством диск. На этом диске расположена специальная
+библиотека с именем MOUSE.LIB, выполняющая поддержку функционирования
+&quot;мыши&quot; на самом нижнем уровне. Мы будем использовать функции из этой
+библиотеки в качестве базовых функций при рассмотрении программ, предлагаемых
+вам в этой главе. вы должны помнить, что ваш компилятор С должен быть совместим
+с подключаемыми на этапе редактирования связей подпрограммами из библиотеки
+подпрограмм поставляемых на диске фирмой Microsoft. вам также надлежит помнить,
+что обязательно необходимо наличие драйвера устройства MOUSE.SYS.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>После беглого обзора основ использования манипулятора типа
+&quot;мышь&quot; в этой главе вы получите информацию о том, как можно
+модифицировать ранее рассмотренную программу &quot;рисования&quot; с тем, чтобы
+она могла работать с &quot;мышью&quot; (с учетом того, что основные концепции
+применения &quot;мыши&quot;, а также разработанные в процессе
+
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>изложения материала
+подпрограммы,<span style="mso-spacerun: yes">  </span>могут<span
+style="mso-spacerun: yes">  </span>использоваться<span style="mso-spacerun:
+yes">  </span>вами<span style="mso-spacerun: yes">  </span>в
+
+<p class=MsoNormal style='0cm;margin-right:0cm;599.4pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>дальнейшем при создании различных
+конкретных приложений). 
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="9-1">Некоторые начальные сведения о мыши. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='margin-left:27.5pt;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Для того, чтобы использовать &quot;мышь&quot;, прежде всего необходимо
+инсталировать соответствующий драйвер. Для &quot;мыши&quot; фирмы Microsoft в
+файл CONFIG.SYS должна быть добавлена следующая строка:
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+11.1pt;margin-left:159.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'>device = mouse.sys
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Для инсталяции драйвера &quot;мыши&quot; фирмы IBM
+должна быть запущена программа MOUSE.COM. С этой целью в файл AUTOEXEC.BAT
+может быть добавлена строка вида:
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:192.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'>mouse
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>После того, как драйвер размещен в системе, любые
+действия по перемещению &quot;мыши&quot; или нажатию ее клавиш будут вызывать
+генерацию прерывания 33Н. Процесс, управляющий &quot;мышью&quot;, вызывает
+прерывание, затем устанавливает значения соответствующих внутренних переменных
+и продолжает свою работу. Вследствие того, что прерывание генерируется лишь при
+изменении &quot;мышью&quot; своего положения, неподвижная &quot;мышь&quot; не
+вызывает необходимости выделения на нее ресурсов компьтера.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+
+><span
+style='font-size:10.0pt'>Точно так же, как с клавиатурой ассоциирован курсор, с
+&quot;мышью&quot; также ассоциирован некий маркер на экране (называемый далее
+указатель). Подпрограммы в библиотеке в поддержке &quot;мыши&quot; фирмы
+Microsoft определяют по умолчанию следующую форму указателя: в графических
+режимах - это стрелка, а в текстовых режимах - прямоугольник в рамках габаритных
+размеров символа. Аналогично курсору клавиатуры указатель-курсор
+&quot;мыши&quot; может отображаться лишь тогда, когда &quot;мышь&quot;
+непосредственно используется. В противном случае указатель-курсор
+&quot;мыши&quot; не отображается на экране так, как будто интерфейса с &quot;мышью&quot;
+вообще не существует.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+99.9pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Несмотря на то, что &quot;мышь&quot; и экран физически отделены друг от
+друга, связь между ними все же имеется, так как драйвер &quot;мыши&quot;
+автоматически отслеживает содержимое счетчиков, индицирующих текущее состояние
+указателя-курсора &quot;мыши&quot; на экране. При перемещении &quot;мыши&quot;
+курсор автоматически перемещается на экране в точном соответствии с изменением
+координат &quot;мыши&quot;. Расстояние, на которое была перемещана
+&quot;мышь&quot;, измеряется в &quot;мышиных&quot; шагах. Один такой шаг равен
+1/200 дюйма. Однако в большинстве случаев знать на сколько переместилась
+&quot;мышь&quot; совсем необязательно. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="9-2">Виртуализация и реальный экран </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;410.7pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Библиотека
+подпрограмм поддержки &quot;мыши&quot; фирмы Microsoft работает с виртуальным
+экраном в виде массива точек растра (массива из единиц минимального
+изображения, цвет и яркость которых можно задать независимо от остального
+изображения), который может отличаться от реального экрана. При перемещении
+&quot;мыши&quot; счетчики местоположения курсора изменяют свое значение. Перед
+отображением курсора виртуальные координаты курсора преобразуются в координаты
+реального экрана. В видеорежимах 6, 14, 15 и 16 это преобразование
+осуществляется один к одному. В режимах 4 и 5 не каждая точка виртуальной
+горизонтальной позиции преобразуется в координты реального экрана, а через
+одну. вы должны обратить внимание на этот факт, так как программа рисования, к
+которой будет добавлен интерфейс с &quot;мышью&quot; и которая будет
+рассматриваться в данной главе, работает именно в 4 графическом режиме. 
+
+<<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="9-3">Библиотека поддержки "мыши". </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Подпрограммы внутри MOUSE.LIB ассоциируются у
+пользователя с одной функцией, использующей в качестве входного аргумента
+число, специфицирующее номер функции поддержки &quot;мыши&quot;. (Этот процесс
+некоторым образом сходен с процессом доступа к функциям DOS посредством
+прерывания 21Н с указанием номера нужной функции). Имя этой функции
+определяется моделью памяти, которая используется при компиляции вашей
+программы. Используйте имя cmouses() для модели маленькой памяти, cmousec() для
+модели компактной памяти, cmousem() для модели средней памяти и cmousel() для
+модели большой и самой большой (огромной) памяти. (Заметим, что функция не
+может работать в модели самой маленькой памяти). Пример, представленный в этой
+главе, использует модель маленькой памяти, однако вы можете изменить тип модели
+памяти по своему усмотрению.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'>Основным форматом функции
+cmouses() является:
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void cmouses(fnum,
+arg2, arg3, arg4);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int *fnum, *arg2,
+*arg3, *arg4;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Как
+видно, fnum является номером функции поддержки &quot;мыши&quot;, которую
+необходимо вызвать. Другие параметры содержат информацию, необходимую для
+спецификации функции. Обратите внимание, что функции передаются не сами
+аргументы, а указатели на их значения. Функция cmouses() возвращает результаты
+работы в виде параметров и, следовательно, нуждается в их адресации. Фирма
+Microsoft определила тридцать функций поддержки &quot;мыши&quot;. Однако в
+программе рисования будут использованы лишь пять из них. Ниже приведен краткий
+обзор функций поддержки &quot;мыши&quot; фирмы Microsoft, которые будут
+использованы нами в этой главе.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><u>Привести в исходное
+состояние, выдать статус. <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Функция
+0 приводит &quot;мышь&quot; в начальное состояние (сбрасывает &quot;мышь&quot;)
+Она перемещает курсор-указатель &quot;мыши&quot; в центр экрана и
+&quot;выключает &quot; его. Функция возвращает номер нажатой клавиши
+&quot;мыши&quot; в качестве значения arg2. После завершения функции fnum
+принимает значение 0, если &quot;мышь&quot; и соответствующее программное
+обеспечение не инсталированы, и -1 в противном случае.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><u>Отобразить курсор <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Функция
+1 отображает указатель-курсор &quot;мыши&quot;. Она не возвращает никакого
+значения.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+22.2pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><u>Переместить курсор <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Функция
+2 перемещает курсор по экрану. Она не возвращает никакого значения.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><u>Выдать статус клавиши и
+позицию курсора <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Функция 3 возвращает статус клавиши в arg2,
+виртуальную горизонтальную позицию курсора в arg3, а виртуальную вертикальную
+позицию курсора в arg4.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Статус клавиши кодируется в битах 0 и 1 байта arg2. Если значение бита
+0 установлено (равно 1), то была нажата левая клавиша &quot;мыши&quot;, если
+значение бита 1 установлено (равно 1), то была нажата правая клавиша. Если
+значения обоих битов не установлены (равны 0), то никакая клавиша нажата не
+была.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><u>Установить координаты
+курсора <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Функция 4 устанавливает месторасположение курсора
+&quot;мыши&quot;. Значение arg3 определяет горизонтальную позицию, а значение
+arg4
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>- вертикальную позицию
+курсора. вы всегда должны помнить, что значения не должны выходить за пределы
+виртуального экрана, который вы используете.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><u>Индикация движения <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Функция 11 возвращает число вертикальных и
+горизонтальных &quot;мышиных&quot; шагов, которое &quot;мышь&quot; прошла со
+времени последнего обращения к функции 11, другими словами - это изменение
+вертикальных и горизонтальных координат &quot;мыши&quot;. Функция также сбрасывает
+внутренний регистр-счетчик в 0. Значение вертикального счетчика возвращается в
+arg3, а горизонтального - в arg4. Это позволяет, если &quot;мышь&quot; после
+последнего обращения к функции не перемещалась на плоскости, получить значения
+как горизонтального, так и вертикального счетчиков равными 0. Если значение
+одного из счетчиков (или обоих) отлично от 0, то &quot;мышь&quot; перемещалась
+на плоскости.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+
+><span
+style='font-size:10.0pt'>Положительное значение изменения вертикальных
+&quot;мышиных&quot; шагов позволяет заключить, что &quot;мышь&quot; двигалась
+вниз. Отрицательное же значение свидетельствует о движении &quot;мыши&quot;
+вверх.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+22.2pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Положительное значение изменения числа горизонтальных шагов
+свидетельствует о том, что &quot;мышь&quot; перемещалась вправо, а
+отрицательное значение показывает на то, что &quot;мышь&quot; перемещалась
+влево. 
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="9-4">Функции поддержки "мыши" верхнего уровня. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Используя
+функцию cmouses() вы можете создать набор функций языка Си высокого уровня,
+которые значительно облегчат вам программирование интерфейсов, ориентированных
+на использованием &quot;мыши&quot;. Посмотрите, как это делается.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><u>Установка
+&quot;мыши&quot; в исходное состояние. <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Функция, представленная ниже, mouse_reset()
+используется для установки &quot;мыши&quot; в исходное состояние. Заметим, что
+функция требует наличия соответствующего программного обеспечения и аппаратной
+части компьютера, а также инсталяции двухклавишной &quot;мыши&quot;.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'>/* Установка
+&quot;мыши&quot; в исходное состояние */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void mouse_reset()
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2, arg3, arg4;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 0;<span
+style="mso-spacerun: yes">  </span>/* Установка &quot;мыши&quot; в исходное
+состояние<span style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses( &amp;fnum,
+&amp;arg2, &amp;arg3, &amp;arg4);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(fnum!=-1) 
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;Аппаратные
+или программные средства поддержки &quot;);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;'мыши' не
+инсталированы&quot;);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>exit(1);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(arg2!=2) 
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:38.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;Разрешено
+использование только двухклавишной 'мыши'&quot;);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>exit(1);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><u>Отображение и перемещение курсора
+&quot;мыши&quot;. <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Взаимодополняющие
+друг друга функции cursor_on() и cursor_off(), представленные ниже, позволяют
+активизировать и деактивизировать изображение курсора на экране дисплея.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/*<span
+style="mso-spacerun: yes">  </span>Включение курсора &quot;мыши&quot;<span
+style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void cursor_on()
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 1; /* отобразить
+курсор */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses(
+&amp;fnum,<span style="mso-spacerun: yes">  </span>&amp;fnum,<span
+style="mso-spacerun: yes">  </span>&amp;fnum,<span style="mso-spacerun: yes"> 
+</span>&amp;fnum);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/*<span
+style="mso-spacerun: yes">  </span>Выключение курсора &quot;мыши&quot;<span
+style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void cursor_off()
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 2; /* стереть
+курсор */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses(
+&amp;fnum,<span style="mso-spacerun: yes">  </span>&amp;fnum,<span
+style="mso-spacerun: yes">  </span>&amp;fnum,<span style="mso-spacerun: yes"> 
+</span>&amp;fnum);
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><u>Какая из клавиш &quot;мыши&quot; была
+нажата? <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Другой
+парой взаимодополняющих друг друга функций являются функции rightb_pressed() и
+leftb_pressed(), представленные ниже. Эти функции возвращают значение
+&quot;истина&quot;, если нажата правая или левая клавиши.
+
+<p class=MsoNormal align=center style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:0cm;.0001pt;text-align:center;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>/* Возвращает значение &quot;истина&quot;, если нажата
+правая клавиша,
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;tab-stops:385.0pt;mso-layout-grid-align:
+none;text-autospace:none'>и &quot;ложь&quot; в
+противном случае<span style='mso-tab-count:1'>                                                                                            </span>*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>rightb_pressed()
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2, arg3, arg4;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 3;<span
+style="mso-spacerun: yes">   </span>/* Чтение позиции и статуса клавиши */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses( &amp;fnum,
+&amp;arg2, &amp;arg3, &amp;arg4);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>return arg2 &amp; 2;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal align=center style='margin-right:4.4pt;text-align:center;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>/* Возвращает значение &quot;истина&quot;, если нажата
+левая клавиша,
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;tab-stops:385.0pt;mso-layout-grid-align:
+none;text-autospace:none'>и &quot;ложь&quot; в
+противном случае<span style='mso-tab-count:1'>                                                                                            </span>*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>leftb_pressed()
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2, arg3, arg4;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 3;<span
+style="mso-spacerun: yes">   </span>/* Чтение позиции и статуса клавиши */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses( &amp;fnum,
+&amp;arg2, &amp;arg3, &amp;arg4);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>return arg2 &amp; 1;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><u>Как обнаружить перемещение
+&quot;мыши&quot;? <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Функция
+11, которая возвращает изменение значения счетчика &quot;мыши&quot; (в
+&quot;мышиных&quot; шагах) после последнего обращения к ней, позволяет
+определить факт перемещения &quot;мыши&quot;. Функция mouse_motion(),
+представленная ниже, возвращает изменение
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>местоположения<span
+style="mso-spacerun: yes">    </span>&quot;мыши&quot;<span style="mso-spacerun:
+yes">    </span>в<span style="mso-spacerun: yes">   </span>горизонтальном<span
+style="mso-spacerun: yes">   </span>и<span style="mso-spacerun: yes">  
+</span>вертикальном
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>направлениях в
+переменных,<span style="mso-spacerun: yes">  </span>чьи<span
+style="mso-spacerun: yes">  </span>указатели<span style="mso-spacerun: yes"> 
+</span>являются<span style="mso-spacerun: yes">  </span>аргументами
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>функции.<span
+style="mso-spacerun: yes">  </span>Если<span style="mso-spacerun: yes"> 
+</span>оба<span style="mso-spacerun: yes">  </span>значения<span
+style="mso-spacerun: yes">  </span>deltax<span style="mso-spacerun: yes"> 
+</span>и deltay равны 0,<span style="mso-spacerun: yes">  </span>то факт
+
+<p
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>движения &quot;мыши&quot; не
+регистрируется.
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/*<span
+style="mso-spacerun: yes">  </span>Возвращает направление движения<span
+style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void
+mouse_motion(deltax, deltay)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>char *deltax, *deltay;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2, arg3, arg4;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 11; /* получить
+направление движения */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses( &amp;fnum,
+&amp;arg2, &amp;arg3, &amp;arg4);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(arg3&gt;0) *deltax
+= RIGHT;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>else if(arg3&lt;0)
+*deltax = LEFT;
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>else *deltax = NOT_MOVED;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(arg4&gt;0) *deltay
+= DOWN;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>else if(arg4&lt;0)
+*deltay = UP;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>else *deltay =
+NOT_MOVED;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='margin-left:27.5pt;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Макросы RIGHT, LEFT, UP, DOWN и NOT_MOVED определены следующим образом:
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>#define NOT_MOVED 0
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;tab-stops:135.5pt;
+mso-layout-grid-align:none;text-autospace:none'>#define
+RIGHT<span style='mso-tab-count:1'>                     </span>1
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;tab-stops:135.5pt;
+mso-layout-grid-align:none;text-autospace:none'>#define
+LEFT<span style='mso-tab-count:1'>                        </span>2
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;tab-stops:135.5pt;
+mso-layout-grid-align:none;text-autospace:none'>#define
+UP<span style='mso-tab-count:1'>                            </span>3
+
+<p class=MsoNormal style='0cm;margin-right:0cm;33.3pt;
+margin-left:27.5pt;mso-hyphenate:none;tab-stops:135.5pt;mso-layout-grid-align:
+none;text-autospace:none'>#define DOWN<span
+style='mso-tab-count:1'>                    </span>4 
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><u>Чтение и установка позиции курсора. <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:265.0pt 313.0pt;
+mso-layout-grid-align:none;text-autospace:none'>Функции
+set_mouse_position()<span style='mso-tab-count:1'>                                    </span>и<span
+style='mso-tab-count:1'>                   </span>mouse_position(),
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>представленные<span
+style="mso-spacerun: yes">  </span>ниже,<span style="mso-spacerun: yes"> 
+</span>используются<span style="mso-spacerun: yes">  </span>для установки
+чтения текущей
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>позиции курсора &quot;мыши&quot;. 
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/* Установить
+координаты курсора &quot;мыши&quot; */
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void
+set_mouse_position(x, y)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int x, y;
+
+<p
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 4; /* установка
+позиции */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses(&amp;fnum,
+&amp;arg2, &amp;x, &amp;y);
+
+<p
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>/* Возвращает координаты курсора
+&quot;мыши&quot; */ 
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void mouse_position(x,
+y)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int *x, *y;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2, arg3, arg4;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 3; /* получить
+позицию и статус клавиши */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses( &amp;fnum,
+&amp;arg2, &amp;arg3, &amp;arg4);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>*x = arg3;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>*y = arg4;
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="9-5">Простейшая демонстрационная программа. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Программа, представленная ниже, демонстрирует
+применение функций поддержки &quot;мыши&quot; высокого уровня. вы можете сразу
+ввести ее в ваш компьютер и попробовать ее в деле.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+11.1pt;margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'>/*<span
+style="mso-spacerun: yes">  </span>Интерфейс с &quot;мышью&quot; Microsoft/IBM
+*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>#include
+&quot;dos.h&quot;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>#define NOT_MOVED 0
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:135.5pt;
+mso-layout-grid-align:none;text-autospace:none'>#define
+RIGHT<span style='mso-tab-count:1'>                     </span>1
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:135.5pt;
+mso-layout-grid-align:none;text-autospace:none'>#define
+LEFT<span style='mso-tab-count:1'>                        </span>2
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:135.5pt;
+mso-layout-grid-align:none;text-autospace:none'>#define
+UP<span style='mso-tab-count:1'>                            </span>3
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:135.5pt;
+mso-layout-grid-align:none;text-autospace:none'>#define
+DOWN<span style='mso-tab-count:1'>                    </span>4
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void mouse_position(),
+mode(), goto_xy(), mouse_motion();
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>void cursor_on(), cursor_off(),
+mouse_reset();
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>main(argc, argv)
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int argc;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>char *argv[];
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>char deltax, deltay, x, y;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(argc!=2) 
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;
+Используйте формат: mouser &lt;видеорежим&gt; &quot;);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>exit(1);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>mode(atoi(argv[1]));
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>mouse_reset();<span
+style="mso-spacerun: yes">  </span>/* инициализация &quot;мыши&quot;<span
+style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>cursor_on();<span style="mso-spacerun:
+yes">    </span>/* &quot;включение&quot; курсора<span style="mso-spacerun:
+yes">   </span>*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>do 
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>goto_xy(0, 0);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(leftb_presed())
+printf(&quot;Левая клавиша&quot;);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(rightb_pressed()) 
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;Правая
+клавиша&quot;);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>mouse_position(&amp;x,
+&amp;y);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;%d %d -
+&quot;, x, y);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal align=center style='margin-right:4.4pt;text-align:center;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>/* Отображение местоположения &quot;мыши&quot; */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>mouse_motion(&amp;deltax,
+&amp;deltay);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(deltax || deltay) 
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;Перемещение&quot;);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>switch(deltax) 
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:137.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>case NOT_MOVED: break;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:137.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>case RIGHT:
+printf(&quot;Вправо&quot;);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:165.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>break;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:137.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>case LEFT:
+printf(&quot;Влево&quot;);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:165.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>break;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>switch(deltay) 
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>case
+NOT_MOVED: break;
+
+<p class=MsoNormal style='margin-left:137.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>case UP:
+printf(&quot;Вверх&quot;);
+
+<p class=MsoNormal style='margin-left:165.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>break;
+
+<p class=MsoNormal style='margin-left:137.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>case DOWN:
+printf(&quot;Вниз&quot;);
+
+<p class=MsoNormal style='margin-left:165.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>break;
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/* Цикл выполняется
+пока обе клавиши нажаты одновременно */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>while(!(leftb_pressed() &amp;&amp;
+rightb_pressed()));
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>mode(3);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/* Установка видеорежима<span
+style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void mode(mode_code)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int mode_code;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>union REGS r;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>r.h.al = mode_code;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>r.h.ah = 0;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int86(0x10, &amp;r,
+&amp;r);
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/* Пересылка курсора в
+позицию, специфицированную
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>координатами х и у */
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void goto_xy(x, y)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int x, y;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>union REGS r;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>r.h.ah=2;<span
+style="mso-spacerun: yes">  </span>/* функция адресации курсора<span
+style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>r.h.dl = y; /*
+координаты столбца */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>r.h.dh = x; /*
+координаты строки */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>r.h.bh = 0; /*
+видеостраница */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int86(0x10, &amp;r,
+&amp;r);
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>/**********************************************************/
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;tab-stops:375.5pt;
+mso-layout-grid-align:none;text-autospace:none'>/*
+Функции, обеспечивающие интерфейс с &quot;мышью&quot;<span style='mso-tab-count:
+1'>                                                       </span>*/
+
+<p
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>/**********************************************************/
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/*<span
+style="mso-spacerun: yes">  </span>Включение курсора &quot;мыши&quot;<span
+style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void cursor_on()
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 1; /*
+отобразить курсор */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses(
+&amp;fnum,<span style="mso-spacerun: yes">  </span>&amp;fnum,<span
+style="mso-spacerun: yes">  </span>&amp;fnum,<span style="mso-spacerun: yes"> 
+</span>&amp;fnum);
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/*<span
+style="mso-spacerun: yes">  </span>Выключение курсора &quot;мыши&quot;<span
+style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>void cursor_off() 
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 2; /* стереть
+курсор */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses(
+&amp;fnum,<span style="mso-spacerun: yes">  </span>&amp;fnum,<span
+style="mso-spacerun: yes">  </span>&amp;fnum,<span style="mso-spacerun: yes"> 
+</span>&amp;fnum);
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>/*
+Возвращает значение &quot;истина&quot;, если нажата правая клавиша,
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;tab-stops:385.0pt;mso-layout-grid-align:
+none;text-autospace:none'>и &quot;ложь&quot; в
+противном случае<span style='mso-tab-count:1'>                                                                                            </span>*/
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>rightb_pressed()
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2, arg3, arg4;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 3;<span
+style="mso-spacerun: yes">   </span>/* Чтение позиции и статуса клавиши<span
+style="mso-spacerun: yes">   </span>*/
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses( &amp;fnum,
+&amp;arg2, &amp;arg3, &amp;arg4);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>return arg2 &amp; 2;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/* Возвращает значение
+&quot;истина&quot;, если нажата левая клавиша,
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;tab-stops:385.0pt;mso-layout-grid-align:
+none;text-autospace:none'>и &quot;ложь&quot; в
+противном случае<span style='mso-tab-count:1'>                                                                                            </span>*/
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>leftb_pressed()
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2, arg3, arg4;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 3;<span
+style="mso-spacerun: yes">   </span>/* Чтение позиции и статуса клавиши<span
+style="mso-spacerun: yes">   </span>*/
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses( &amp;fnum,
+&amp;arg2, &amp;arg3, &amp;arg4);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>return arg2 &amp; 1;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/*<span
+style="mso-spacerun: yes">  </span>Возвращает направление движения<span
+style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void
+mouse_motion(deltax, deltay)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>char *deltax, *deltay;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2, arg3, arg4;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 11; /* получить
+направление движения */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses( &amp;fnum,
+&amp;arg2, &amp;arg3, &amp;arg4);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(arg3&gt;0) *deltax
+= RIGHT;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>else if(arg3&lt;0)
+*deltax = LEFT;
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>else *deltax = NOT_MOVED;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(arg4&gt;0) *deltay
+= DOWN;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>else if(arg4&lt;0)
+*deltay = UP;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>else *deltay =
+NOT_MOVED;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>/* Установить координаты курсора
+&quot;мыши&quot; */ 
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void
+set_mouse_position(x, y)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int x, y;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 4; /* установка
+позиции */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses(&amp;fnum,
+&amp;arg2, &amp;x, &amp;y);
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/* Возвращает
+координаты курсора &quot;мыши&quot; */
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void mouse_position(x,
+y)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int *x, *y;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2, arg3, arg4;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 3; /* получить
+позицию и статус клавиши */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses( &amp;fnum,
+&amp;arg2, &amp;arg3, &amp;arg4);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>*x = arg3;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>*y = arg4;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>
+
+<p
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>/* Установка &quot;мыши&quot; в исходное
+состояние<span style="mso-spacerun: yes">   </span>*/
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void mouse_reset()
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int fnum, arg2, arg3, arg4;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>fnum = 0;<span
+style="mso-spacerun: yes">  </span>/* Установка &quot;мыши&quot; в исходное
+состояние<span style="mso-spacerun: yes">  </span>*/
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>cmouses( &amp;fnum,
+&amp;arg2, &amp;arg3, &amp;arg4);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(fnum!=-1) 
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;Аппаратные
+или программные средства поддержки &quot;);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;'мыши' не
+инсталированы&quot;);
+
+<p
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>exit(1);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(arg2!=2) 
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;Разрешено
+использование только двухклавишной &quot;);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;'мыши'&quot;);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>exit(1);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;22.2pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Перед
+использованием этой программы в командной строке DOS специфицируйте видеорежим,
+в котором вы желаете работать. Программа будет сообщать вам о направлении
+перемещения &quot;мыши&quot;,а также о нажатых клавишах &quot;мыши&quot;.
+Вдобавок ко всему, нажатие правой клавиши будет вызывать отображение текущей
+позиции Х, У. Нажатие обеих клавиш вызовет завершение программы. Попробуйте
+выполнить эту программу в различных видеорежиах и обратите внимание на
+возникающие при этом эффекты. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="9-6">Ввод информации с помощью "мыши" в программе рисования. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Итак, вы теперь готовы к тому, чтобы разработать
+подпрограммы, позволяющие с помощью &quot;мыши&quot; управлять программой
+рисования. Интерфейс с &quot;мышью&quot; может быть добавлен в существующие
+подпрограммы управления, что, естественно, будет более предпочтительно, чем
+разработка новых подпрограмм или модификация существующих.
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;text-align:justify;text-indent:33.0pt;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Такой путь выгоден прежде всего тем, что функциональны
+возможности клавиш управления курсором сохраняются на все 100 процентов, и
+пользователь в каждой конкретной ситуации может выбрать наиболее подходящее
+устройство для ввода данных (клавиатура или &quot;мышь&quot;).
+
+<p class=MsoNormal style='0cm;margin-right:13.2pt;
+
+33.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Прежде, чем &quot;мышь&quot; будет включена как
+устройство ввода программу рисования, необходимо разработать две подпрограммы,
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>учитывающие специфику
+&quot;мыши&quot;.<span style="mso-spacerun: yes">  </span>Первая<span
+style="mso-spacerun: yes">  </span>подпрограмма<span style="mso-spacerun:
+yes">  </span>-<span style="mso-spacerun: yes">  </span>wait_on()
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>позволяет<span
+style="mso-spacerun: yes">  </span>реализовать процесс ожидания отпускания
+(освобождения)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>специфицированной
+клавиши пользователем.<span style="mso-spacerun: yes">  </span>Анализ<span
+style="mso-spacerun: yes">  </span>подобного<span style="mso-spacerun: yes"> 
+</span>рода
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>имеет весьма большое
+значение, так как соответствующие прерывания
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>генерируются<span
+style="mso-spacerun: yes">  </span>постоянно,<span style="mso-spacerun: yes"> 
+</span>пока<span style="mso-spacerun: yes">   </span>клавиша<span
+style="mso-spacerun: yes">   </span>не<span style="mso-spacerun: yes">  
+</span>нажата.<span style="mso-spacerun: yes">   </span>(Однако
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>невозможно<span
+style="mso-spacerun: yes">  </span>обеспечить<span style="mso-spacerun: yes"> 
+</span>такое<span style="mso-spacerun: yes">  </span>мгновенное<span
+style="mso-spacerun: yes">  </span>нажатие на клавишу,<span
+style="mso-spacerun: yes">  </span>в
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>результате которого
+сформировалось бы лишь одно<span style="mso-spacerun: yes"> 
+</span>прерывание).<span style="mso-spacerun: yes">  </span>Во
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>многих<span
+style="mso-spacerun: yes">  </span>подпрограммах<span style="mso-spacerun:
+yes">  </span>наоборот<span style="mso-spacerun: yes">  </span>важно<span
+style="mso-spacerun: yes">  </span>избежать такой ситуации и
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>поэтому в них каждое
+нажатие на клавишу генерирует<span style="mso-spacerun: yes">  </span>(точнее
+будет
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>сказать<span
+style="mso-spacerun: yes">  </span>кажется,<span style="mso-spacerun: yes"> 
+</span>что<span style="mso-spacerun: yes">  </span>генерирует)<span
+style="mso-spacerun: yes">  </span>только одно прерывание за то
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>время, пока клавиша
+нажата. В соответствии с этим, ваша программа
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>должна<span
+style="mso-spacerun: yes">   </span>обращаться<span style="mso-spacerun: yes"> 
+</span>к<span style="mso-spacerun: yes">  </span>фунции<span
+style="mso-spacerun: yes">  </span>wait_on(),<span style="mso-spacerun: yes"> 
+</span>представленной<span style="mso-spacerun: yes">  </span>ниже,
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>непосредственно перед
+выполнением<span style="mso-spacerun: yes">  </span>и<span style="mso-spacerun:
+yes">  </span>после<span style="mso-spacerun: yes">  </span>того,<span
+style="mso-spacerun: yes">  </span>когда<span style="mso-spacerun: yes"> 
+</span>нажата
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>соответствующая клавиша. 
+
+<p class=MsoNormal align=center style='11.1pt;text-align:center;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>/* Возвращает 1, если специфицированная клавиша не
+нажата */
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>void wait_on(button)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int button;
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(button== LEFTB)
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>while(leftb_pressed());
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>else
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>while(rightb_pressed());
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Макросы
+LEFTB и RIGHTB, представленные ниже, используются при обращении к wait_on().
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:135.5pt;
+mso-layout-grid-align:none;text-autospace:none'>#define
+LEFTB<span style='mso-tab-count:1'>                     </span>1
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>#define RIGHTB<span style="mso-spacerun:
+yes">    </span>2
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>Второй
+необходимой вам функцией является mouse_menu(). Эта функция отображает
+однострочное меню и позволяет пользователю осуществлять выбор из него элементов
+путем перемещения &quot;мыши&quot; на плоскости (и, соответственно, курсора
+&quot;мыши&quot; по экрану) и нажатия любой клавиши &quot;мыши&quot;. Эта функция
+может работать только в 4
+
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>графическом режиме.
+Функции передается двумерный массив символов,
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>который<span
+style="mso-spacerun: yes">   </span>содержит<span style="mso-spacerun: yes">  
+</span>элементы<span style="mso-spacerun: yes">   </span>меню<span
+style="mso-spacerun: yes">   </span>(которые<span style="mso-spacerun: yes">  
+</span>может<span style="mso-spacerun: yes">   </span>выбрать
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>пользователь),<span
+style="mso-spacerun: yes">  </span>значение каждого элемента меню (его
+код),а<span style="mso-spacerun: yes">  </span>также
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>координаты<span
+style="mso-spacerun: yes">  </span>Х<span style="mso-spacerun: yes">  </span>и <span
+style="mso-spacerun: yes"> </span>У<span style="mso-spacerun: yes"> 
+</span>отображения меню на экране.<span style="mso-spacerun: yes"> 
+</span>Массив символов
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>определяет<span
+style="mso-spacerun: yes">  </span>максимальную<span style="mso-spacerun:
+yes">  </span>длину<span style="mso-spacerun: yes">  </span>каждого<span
+style="mso-spacerun: yes">  </span>элемента<span style="mso-spacerun: yes"> 
+</span>меню<span style="mso-spacerun: yes">   </span>в<span
+style="mso-spacerun: yes">   </span>19
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>символов.<span
+style="mso-spacerun: yes">   </span>Функция<span style="mso-spacerun: yes">  
+</span>возвращает<span style="mso-spacerun: yes">   </span>в<span
+style="mso-spacerun: yes">  </span>качестве<span style="mso-spacerun: yes"> 
+</span>результата<span style="mso-spacerun: yes">  </span>номер
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>выбранного
+пользователем элемента меню, начиная с 0, или -1, если
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>пользователь<span
+style="mso-spacerun: yes">  </span>не выбрал ни один из элементов меню.<span
+style="mso-spacerun: yes">  </span>Когда функция
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>начинает свою
+работу,<span style="mso-spacerun: yes">  </span>то она вначале вычисляет длину
+в<span style="mso-spacerun: yes">  </span>пикселах
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>(элементах растра)
+каждого элемента меню,<span style="mso-spacerun: yes">  </span>после чего
+резервирует
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>пространство по
+начальной и конечной<span style="mso-spacerun: yes">  </span>точке<span
+style="mso-spacerun: yes">  </span>растра<span style="mso-spacerun: yes"> 
+</span>для<span style="mso-spacerun: yes">  </span>каждого
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>элемента<span
+style="mso-spacerun: yes">  </span>меню,<span style="mso-spacerun: yes"> 
+</span>одновременно<span style="mso-spacerun: yes">  </span>запоминая эту
+информацию в массиве
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>len. (В четвертом
+графическом режиме каждый символ имеет высоту в
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:27.5pt;text-align:justify;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>8 точек растра и
+ширину в 16 точек растра.) После этих вычислений, функция переходит в состояние
+ожидаения прерывания от клавиш &quot;мыши&quot;. При этом осуществляется анализ
+нажата или нет клавиша &quot;мыши&quot; в момент нахождения ее курсора в
+области меню, и, если да, то в месте расположения какого элемента меню. Функция
+mouse_menu() приведена ниже.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/* Отображает
+однострочное меню для &quot;мыши&quot; и возвращает
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:44.0pt;mso-hyphenate:none;tab-stops:356.0pt;mso-layout-grid-align:
+none;text-autospace:none'>код выбранного
+пользователем элемента меню<span style='mso-tab-count:1'>                                                   </span>*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>mouse_menu(count,
+item, x, y)
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:153.5pt;
+mso-layout-grid-align:none;text-autospace:none'>int
+count;<span style='mso-tab-count:1'>                                       </span>/*
+количество элементов меню */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:159.5pt;
+mso-layout-grid-align:none;text-autospace:none'>char
+item[][20];<span style='mso-tab-count:1'>                                </span>/*
+элементы меню */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:147.5pt;
+mso-layout-grid-align:none;text-autospace:none'>int
+x, y;<span style='mso-tab-count:1'>                                        </span>/*
+позиции отображения */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>int i,
+len[MENU_MAX][2], t;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>int mousex, mousey;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>goto_xy(x, y);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>t = 0;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>for(i=0; i&lt;count;
+i++) 
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>printf(&quot;%s<span
+style="mso-spacerun: yes">   </span>&quot;, item[i]);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>len[i][0] = t;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/* каждый символ имеет
+ширину в 16 точек растра */ len[i][1] = t + strlen(item[i])*16;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:192.5pt;.0001pt;text-indent:-110.0pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>t = len[i][1] + 32; /* добавляется два пробела между элементами меню */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal align=center style='margin-right:4.4pt;text-align:center;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>/* ожидание выбора пользователем элемента меню */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>do 
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(rightb_pressed() ||
+leftb_pressed()) break;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span
+style="mso-spacerun: yes"> </span>while(!kbhit());
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/* ожидание нажатия
+клавиши */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>while(rightb_pressed() ||
+leftb_pressed());
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>/* получить текущую
+позицию курсора &quot;мыши&quot; */
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>mouse_position(&amp;mousex, &amp;mousey);
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;22.2pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'>/* анализируется, находится ли курсор в
+пределах меню */ 
+
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(mousey&gt;=0
+&amp;&amp; mousey&lt;8)<span style="mso-spacerun: yes">  </span>/* символ имеет
+высоту
+
+<p class=MsoNormal style='0cm;margin-right:83.6pt;
+0cm;margin-left:110.0pt;.0001pt;text-indent:82.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>8 точек растра */ for(i=0; i&lt;count; i++) 
+
+<p class=MsoNormal style='margin-left:137.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>if(mousex&gt;len[i][0]
+&amp;&amp; mousex&lt;len[i][1])
+
+<p class=MsoNormal style='margin-left:165.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>return i;
+
+<p class=MsoNormal style='0cm;margin-right:83.6pt;
+0cm;margin-left:110.0pt;.0001pt;text-indent:82.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'>return i;
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'>returtn
+-1; /* выбор из меню не осуществлялся */
+
+</body>
+
+</html><!--Saved from http://mymanual.narod.ru>

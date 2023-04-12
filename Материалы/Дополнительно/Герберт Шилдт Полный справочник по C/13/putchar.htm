@@ -1,0 +1,22 @@
+<HTML><HEAD>
+<TITLE>Функция putchar</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция putchar</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+int putchar(int <I>ch</I>);
+</PRE>
+<P class="tj">Функция <KBD>putchar()</KBD> записывает символ, содержащийся в младшем байте параметра <I>ch</I>, в стандартный поток вывода <KBD>stdout</KBD>. По выполняемому действию она эквивалентна <KBD>putc(ch, stdout)</KBD>. Поскольку в момент вызова символьные аргументы преобразуются к целому типу, их вполне можно использовать в качестве аргументов функции <KBD>putchar()</KBD>.
+<P class="tj">При успешном выполнении функция <KBD>putchar()</KBD> возвращает записанный символ, а в случае ошибки — значение <KBD>EOF</KBD>.
+<H2>Пример</H2>
+<P class="tj">Следующий цикл записывает символы в строку <KBD>str</KBD> стандартного потока вывода <KBD>stdout</KBD>. Символ конца строки не записывается.
+<PRE>
+for( ; *str; str++) putchar(*str);
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="putc.htm">putc()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

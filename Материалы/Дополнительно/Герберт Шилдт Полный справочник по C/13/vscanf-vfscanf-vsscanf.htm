@@ -1,0 +1,20 @@
+<HTML><HEAD>
+<TITLE>Функция vscanf, vfscanf, vsscanf</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция vscanf, vfscanf, vsscanf</H1>
+<PRE>
+#include &lt;stdarg.h&gt;
+#include &lt;stdio.h&gt;
+int vscanf(char * restrict <I>format</I>, va_list <I>arg_ptr</I>);
+int vfscanf(FILE * restrict <I>stream</I>, const char * restrict <I>format</I>, va_list <I>arg_ptr</I>);
+int vsscanf(char * restrict <I>buf</I>, const char * restrict <I>format</I>, va_list <I>arg_ptr</I>);
+</PRE>
+<P class="tj">Эти функции добавлены в версии C99.
+<P class="tj">Действия функций <KBD>vscanf()</KBD>, <KBD>vfscanf()</KBD> и <KBD>vsscanf()</KBD> эквивалентны действиям функций <KBD>scanf()</KBD>, <KBD>fscanf()</KBD> и <KBD>sscanf()</KBD> соответственно, но список аргументов заменен указателем на этот список. Данный указатель должен иметь тип <KBD>va_list</KBD>, который определен в заголовке <KBD>&lt;stdarg.h&gt;</KBD>.
+<H2>Зависимые функции</H2>
+<A href="vprintf-vfprintf-vsprintf-vsnprintf.htm">vprintf()</A>  <A href="vprintf-vfprintf-vsprintf-vsnprintf.htm">vfprintf()</A>  <A href="vprintf-vfprintf-vsprintf-vsnprintf.htm">vsprintf()</A>  <A href="vprintf-vfprintf-vsprintf-vsnprintf.htm">vsnprintf()</A>  <A href="../18/va_arg-va_start-va_end-va_copy.htm">va_arg()</A>  <A href="../18/va_arg-va_start-va_end-va_copy.htm">va_start()</A>  <A href="../18/va_arg-va_start-va_end-va_copy.htm">va_end()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

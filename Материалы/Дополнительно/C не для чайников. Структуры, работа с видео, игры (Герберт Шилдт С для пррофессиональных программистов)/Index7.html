@@ -1,0 +1,2638 @@
+<html>
+
+<head>
+   <TITLE>C</TITLE>
+</head>
+
+<body bgcolor="#00ffff">
+<a name="top"></a>
+<p><div align="center"><b><font size="+1" face="Arial"><a name="7">Глава 7. Интерпретаторы языка </a></font></b></div></p>
+
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+33.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Вы когда-нибудь хотели создать свой язык
+программирования? Большинство программистов призывают к поиску идеи создания,
+управления и модификации своих языков программирования. Однако, лишь немногие
+программисты могут легко и непринужденно создать язык программирования.
+Создание полного компилятора является многообязывающей задачей, но гораздо
+проще создать интерпретатор языка. Методы, используемые для создания
+итерпретаторов языка, изучаются редко или изучаются довольно абстрактно. В этой
+главе на практических примерах вы будете изучать секреты интерпретации языка и
+грамматического разбора выражений.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Интерпретаторы важны по трем очень важным причинам.
+Во-первых, они могут обеспечивать удобную интерактивную среду (как доказательство
+- интерпретатор стандартного языка BASIC, которыми снабжаются большинство
+персональных компьтеров). Многие пользователи-новички находят, что
+интерактивная среда более удобна, чем компилятор. Во-вторых, интерпретаторы
+языка обеспечивают превосходные интерактивные отладочные возможности. Даже
+ветераны-программисты при отладке трудных программ прибегают к помощи
+интерпретатора языка, потому что он позволяет динамично устанавливать значения
+переменных и условий. В-третьих, большинство языков запросов к базе данных
+работают в режиме интерпретации.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>В этой главе будет разработан интерпретатор для
+подмножества языка BASIC, который еще называют &quot;SMALL BASIC&quot;. BASIC
+выбран вместо Cи, потому что BASIC легче интерпретируется, чем Cи или другой
+структурный язык. Интерпретатор для структурного языка, такого как Cи более
+труден, чем для BASIC из-за автономных функций с локальными переменными,
+которые обеспечивают интерпретатору многозначность. Принципы, используемые в
+интерпретаторе BASIC, применимы и для других языков, и вы можете использовать
+написанные программы в качестве отправной точки. Прежде, чем начать работу,
+необходимо изучить сущность языковой интерпретации, особенно перед тем, как
+браться за интерпетацию такого сложного языка, как Cи. Если вы не знаете BASIC,
+не беспокойтесь, команды используемые в SMALL BASIC очень легкие для понимания.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+122.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Мы начинаем с сердца любого интерпретатора: синтаксического анализатора
+выражений. 
+
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="7-1">Синтаксический разбор выражений </a></i></font></b></div></p>
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Наиболее важной частью интерпретатора языка является
+синтактический анализатор выражений, который преобразует числовые выражения,
+такие как (10-X)/23, в такую форму, чтобы компьютер мог понять ее и вычислить.
+В книге по языку Cи: The Complete Reference (Osborne/McGraw-uill, 1987)
+вступительная глава посвящена синтаксическому анализу выражений. Подобного же
+рода синтаксический анализ, основанный на принципах, изложенных в
+вышеупомянутой книге, (правда, с небольшими изменениями) будет использоваться
+для построения интерпретатора SMALL BASIC в данной главе нашей книги. (Так как
+эта глава содержит только краткие сведения о синтаксическом анализе выражений,
+то для более детального изучения этой проблемы советуем вам обратиться к
+источнику: The Compelete Reference.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Синтаксический анализ выражений является довольно
+сложной задачей, однако в некоторых случаях она облегчается тем, что в процессе
+синтаксического анализа используются довольно строгие правила алгебры.
+Синтаксический анализатор, описанный в этой главе, в общем может быть
+классифицирован как синтаксический анализатор рекурсивного спуска.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+299.7pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Перед тем, как приступить к детальной разработке синтаксического
+анализатора, вы должны иметь представление о выражениях. Поэтому наш следующий
+параграф посвящен именно этому вопросу. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="7-2">Выражения
+</a></i></font></b></div></p>
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Хотя выражения могут быть составлены в принципе из
+любых типов данных, в этой главе мы будем иметь дело только с числовыми
+выражениями. Будем считать, что для наших целей числовые выражения могут строится
+из следующих элементов:
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>- числа
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>- операторы<span
+style="mso-spacerun: yes">  </span>+ - / * ^ % = () &lt;&gt; ; ,
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>- скобки
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>- переменные
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Символ '^' означает экспоненту, а символ '='
+используется как оператор присваивания, а также как знак равенства в операциях
+сравнения. Элементы выражения можно комбинировать согласно правилам алгебры.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>Вот некоторые примеры
+выражений:
+
+<p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>7-8 (100-5)*14/6
+
+<p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>a+b-c
+
+<p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>10^5
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>a=7-b
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Символы '=', '&gt;', '&lt;', ',', ';' являются
+операторами, они не могут использоватся в выражениях функций и конструкциях
+типа IF, PRINT и операторах присваивания. (Заметим, что анализатор языка Cи
+должен обрабатывать и эти операторы в различных их комбинациях).
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Что касается языка BASIC, старшинство операторов не
+определено. В процессе работы синтаксический анализатор присваивает операторам
+следующие приоритеты:
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:49.5pt;.0001pt;mso-hyphenate:none;tab-stops:121.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>высший<span
+style='mso-tab-count:1'>                 </span>()
+
+<p class=MsoNormal style='margin-left:115.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>^
+
+<p class=MsoNormal style='margin-left:115.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*<span
+style="mso-spacerun: yes">  </span>/<span style="mso-spacerun: yes">  </span>%
+
+<p class=MsoNormal style='margin-left:115.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>+<span
+style="mso-spacerun: yes">  </span>-
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:49.5pt;mso-hyphenate:none;tab-stops:121.5pt;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>низший<span
+style='mso-tab-count:1'>                  </span>=
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>Операторы равного приоритета выполняются
+слева направо.
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>Синтаксис
+языка SMALL BASIC предполагает, что все переменные обозначаются одной буквой.
+Это позволяет оперировать в программе двадцати шестью переменными (буквы от A
+до Z). Хотя интерпретаторы языка BASIC поддерживают обычно большее число
+символов в определении переменной, (например, переменные типа Х27), но для
+простоты изложения основных принципов построения интерпретаторов наш
+интерпретатор языка SMALL BASIC этого делать не будет. Будем считать также, что
+переменные разных регистров не отличаются друг от друга и, поэтому, переменные
+&quot;a&quot; и &quot;A&quot; будут трактоваться как одна и та же переменная.
+Условимся, что все числа являются целыми, хотя вы без особого труда можете
+написать
+
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>программы<span
+style="mso-spacerun: yes">  </span>для<span style="mso-spacerun: yes"> 
+</span>манипулирования<span style="mso-spacerun: yes">  </span>другими<span
+style="mso-spacerun: yes">   </span>типами<span style="mso-spacerun: yes">  
+</span>чисел.<span style="mso-spacerun: yes">   </span>Хотя
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>символьные<span
+style="mso-spacerun: yes">  </span>переменные<span style="mso-spacerun: yes"> 
+</span>в нашей версии языка и не поддерживаются,
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>будем<span
+style="mso-spacerun: yes">  </span>считать,<span style="mso-spacerun: yes"> 
+</span>что<span style="mso-spacerun: yes">  </span>возможен<span
+style="mso-spacerun: yes">  </span>вывод<span style="mso-spacerun: yes">  
+</span>ограниченных<span style="mso-spacerun: yes">   </span>символьных
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>констант на экран в виде различных
+сообщений.
+
+<p class=MsoNormal style='0cm;margin-right:0cm;521.7pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>Итак,
+будем строить синтаксический анализатор исходя из перечисленных выше допущений.
+Теперь давайте рассмотрим такое базовое понятие теории синтаксического анализа
+как лексема. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="7-3">Лексемы
+</a></i></font></b></div></p>
+
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Перед тем, как построить синтаксический анализатор,
+разбирающий значения выражений, вы должны иметь несколько вариантов разбиения
+строки, содержащей выражение, на составляющие части. Например, выражение
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+11.1pt;margin-left:181.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>А*В-(W+10)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>содержит<span
+style="mso-spacerun: yes">  </span>компоненты<span style="mso-spacerun: yes"> 
+</span>&quot;А&quot;,<span style="mso-spacerun: yes"> 
+</span>&quot;*&quot;,<span style="mso-spacerun: yes">  </span>&quot;В&quot;,
+&quot;-&quot;, &quot;(&quot;, &quot;W&quot;, &quot;+&quot;, &quot;10&quot; и
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;)&quot;.
+Каждый<span style="mso-spacerun: yes">  </span>компонент<span
+style="mso-spacerun: yes">  </span>представляет<span style="mso-spacerun:
+yes">  </span>собой<span style="mso-spacerun: yes">   </span>неделимый<span
+style="mso-spacerun: yes">   </span>элемент
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>выражения.<span
+style="mso-spacerun: yes">   </span>Такой<span style="mso-spacerun: yes"> 
+</span>компонент<span style="mso-spacerun: yes">  </span>или<span
+style="mso-spacerun: yes">  </span>независимая<span style="mso-spacerun: yes"> 
+</span>часть<span style="mso-spacerun: yes">  </span>выражения
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>называется
+лексемой.<span style="mso-spacerun: yes">  </span>Функция, разбивающая
+выражение на составные
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>части,<span
+style="mso-spacerun: yes">  </span>должна<span style="mso-spacerun: yes"> 
+</span>решать четыре задачи:<span style="mso-spacerun: yes">  </span>(1)
+игнорировать пробелы и
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>символы
+табуляции,<span style="mso-spacerun: yes">  </span>(2) извлекать каждую лексему
+из<span style="mso-spacerun: yes">  </span>текста,<span style="mso-spacerun:
+yes">  </span>(3)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>если<span
+style="mso-spacerun: yes">  </span>необходимо,<span style="mso-spacerun: yes"> 
+</span>преобразовывать<span style="mso-spacerun: yes">  </span>лексему во
+внутренний формат,
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>(4) определять тип лексемы.
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Каждая лексема имеет два формата: внешний и внутренний.
+Внешний формат - это символьная строка, с помощью которой вы пишите программы
+на каком-либо языке программирования. Например, &quot;PRINT&quot; - это внешняя
+форма команды PRINT языка BASIC. Можно построить интерпретатор из расчета, что
+каждая лексема используется во внешнем формате, но это типичное решение
+проблемы программистом-непрофессионалом, который лишь два часа назад оторвался
+от материной юбки и час назад увидел настоящий компьютер. Настоящие мужчины
+ориентируются на внутренний формат лексемы, который является просто числом, и
+разрабатывают интерпретаторы исходя из этой профессиональной точки зрения на
+проблему. Поясним этот подход. Например, команда PRINT может иметь порядковый
+внутренний номер 1, команда INPUT - 2 и т.д. Преимущество внутреннего формата
+заключается в том, что программы, обрабатывающие числа, более
+быстродействующие, чем программы, обрабатывающие строки. Для реализации такого
+подхода необходима функция, которая берет из входного потока данных очередную
+лексему и преобразует ее из внешнего формата во внутренний. Помните, что не все
+лексемы имеют разные форматы. Например, операторы не подлежат преобразованию
+потому, что они могут трактоваться как символы или числа в своих внешних
+форматах.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Очень важно знать, какой тип лексемы возвращен.
+Например, анализатору выражений необходимо знать, является ли следующая лексема
+числом, оператором или переменной. Значение типа лексемы для процесса анализа в
+целом станет очевидным, когда вы приступите непосредственно к разработке
+интерпретатора.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Функция, которая возвращает следующую лексему в выражении, называется
+get_token( ). Она работает из расчета того, что в языке SMALL BASIC, программа
+хранится как одна строка, ограниченная в конце символом завершения строки (\0).
+Функция get_token() сканирует текст программы, анализируя по одному символу,
+при этом глобальный указатель анализатора принимает
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>значение адреса
+очередной считаной лексемы. В версии get_token(),
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>приведенной ниже,<span
+style="mso-spacerun: yes">  </span>этот указатель называется prog.<span
+style="mso-spacerun: yes">  </span>Так как<span style="mso-spacerun: yes"> 
+</span>prog
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>является<span
+style="mso-spacerun: yes">  </span>глобальной<span style="mso-spacerun: yes"> 
+</span>переменной,<span style="mso-spacerun: yes">  </span>то его значение
+между вызовами
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token сохраняется
+и позволяет<span style="mso-spacerun: yes">  </span>другим<span
+style="mso-spacerun: yes">  </span>функциям<span style="mso-spacerun: yes"> 
+</span>использовать
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>его.
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Анализатор, разрабатываемый в этой главе, использует
+шесть типов лексем: DELIMITER, VARIABLE, NUMBER, COMMAND, STRING и QUOTE
+(разделитель, переменная, число, команда, строка и кавычки). Тип VARIABLE
+приписывается переменным. Тип DELIMITER приписывается операторам и скобкам. Тип
+NUMBER - для чисел. Тип COMMAND - для команд языка SMALL BASIC. Тип STRING
+временно используется внутри get_token() пока идет разбор лексемы. Тип QUOTE
+используется при определении кавычек, ограничивающих строку. Глобальная
+переменная token_type содержит тип лексемы. Внутреннее представление лексемы помещается
+в глобальную переменную tok.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Ниже приведена функция get_token(). Все остальные необходимые
+вспомогательные функции для полного синтаксического анилизатора будут приведены
+в этой главе немного позже.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define DELIMITER<span
+style="mso-spacerun: yes">  </span>1
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define VARIABLE<span
+style="mso-spacerun: yes">   </span>2
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:169.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+NUMBER<span style='mso-tab-count:1'>                   </span>3
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define COMMAND<span
+style="mso-spacerun: yes">    </span>4
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:169.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+STRING<span style='mso-tab-count:1'>                      </span>5
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:169.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+QUOTE<span style='mso-tab-count:1'>                      </span>6
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define FINISHED<span
+style="mso-spacerun: yes">   </span>10
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;tab-stops:169.0pt;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define EOL<span
+style='mso-tab-count:1'>                             </span>9
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>extern char token[80];
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>extern int tok,
+token_type;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>extern char
+*prog;<span style="mso-spacerun: yes">  </span>/* Содержит анализируемое
+выражение */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Получить лексему */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token()
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>register char *temp;
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>token_type=0; tok=0;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>temp=token;
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*prog=='\0')<span
+style="mso-spacerun: yes">   </span>/* Конец файла */
+
+<p class=MsoNormal style='margin-left:77.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*token=0;
+
+<p class=MsoNormal style='margin-left:77.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>tok=FINISHED;
+
+<p class=MsoNormal style='margin-left:77.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return(token_type=DELIMITER);
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>while(iswhite(*prog)) ++prog;<span
+style="mso-spacerun: yes">  </span>/* пропуск пробелов */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*prog=='\r')<span
+style="mso-spacerun: yes">  </span>/* crtl */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>++prog; ++prog;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>tok= EOL; *token='\r'; 
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>token[1]='\n';token[2]=0;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return (token_type =
+DELIMITER);
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(strchr(&quot;+-*^/%=;(),&gt;&lt;&quot;,
+*prog))<span style="mso-spacerun: yes">  </span>/* разделитель */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*temp=*prog;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>prog++; /* переход на
+слкдующую позицию */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>temp++;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*temp=0;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return
+(token_type=DELIMITER);
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*prog=='&quot;')<span
+style="mso-spacerun: yes">   </span>/* строка в кавычках */
+
+<p class=MsoNormal style='margin-left:77.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>prog++;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>while(*prog !=
+'&quot;' &amp;&amp; *prog!='\r') *temp++=*prog++;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*prog=='\r')
+serror(1);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>prog++;*temp=0;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return(token_type=QUOTE);
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(isdigit(*prog))<span
+style="mso-spacerun: yes">  </span>/* число */
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>while(!isdelim(*prog))
+*temp++=*prog++;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*temp = '\0';
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return(token_type =
+NUMBER);
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(isalpha(*prog))<span
+style="mso-spacerun: yes">   </span>/* переменная или команда */
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>while(!isdelim(*prog))
+*temp++=*prog++;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>token_type=STRING;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*temp = '\0';
+
+<p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Просматривается,
+если строка есть команда или переменная */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(token_type==STRING)
+
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>tok=look_up(token); /*
+преобразование во внутренний
+
+<p class=MsoNormal style='margin-left:209.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>формат */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(!tok) token_type =
+VARIABLE;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>else token_type =
+COMMAND; /* это команда */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return token_type;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>Посмотрите
+внимательно на get_token(). Многие программисты любят помещать пробелы перед
+выражениями для улучшения удобочитаемости и наглядности своей программы.
+Лидирующие пробелы пропускаются с помошью функции is_white(), которая
+возвращает значение &quot;истина&quot; (&quot;TRUE&quot;), если ее аргумент
+является пробелом или символом табуляции. Псле пропуска пробелов, сканер,
+реализуемый с помощью программы prog, указывает на каждое число, переменную,
+команду, символ &quot;возврат каретки&quot; или ноль, если достигнут конец
+выражения (программы). Если очередным анализируемым символом является символ
+&quot;возврат каретки&quot; (\r), то возвращается значение &quot;конец строки
+программы&quot; (&quot;EOL&quot;). Если
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>очередной<span
+style="mso-spacerun: yes">  </span>символ<span style="mso-spacerun: yes"> 
+</span>является<span style="mso-spacerun: yes">  </span>оператором,<span
+style="mso-spacerun: yes">  </span>то<span style="mso-spacerun: yes">  </span>в
+качестве значения
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>глобальной переменной
+token возвращается<span style="mso-spacerun: yes">  </span>соответствующая
+строка,
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>при этом в переменную
+token_type помещается значение DELIMITER. В
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>противном случае
+проверяется наличие<span style="mso-spacerun: yes">  </span>кавычек.<span
+style="mso-spacerun: yes">  </span>Затем<span style="mso-spacerun: yes"> 
+</span>происходит
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>проверка<span
+style="mso-spacerun: yes">  </span>является<span style="mso-spacerun: yes"> 
+</span>ли<span style="mso-spacerun: yes">  </span>лексема<span
+style="mso-spacerun: yes">  </span>числом.<span style="mso-spacerun: yes"> 
+</span>Если<span style="mso-spacerun: yes">  </span>лексема<span
+style="mso-spacerun: yes">  </span>является
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>символом,<span
+style="mso-spacerun: yes">  </span>то она,<span style="mso-spacerun: yes"> 
+</span>следовательно,<span style="mso-spacerun: yes">  </span>является или<span
+style="mso-spacerun: yes">  </span>переменной<span style="mso-spacerun: yes"> 
+</span>или
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>командой.<span
+style="mso-spacerun: yes">  </span>Функция<span style="mso-spacerun: yes"> 
+</span>look_up() сравнивает внешний формат лексемы с
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>таблицей лексем,<span
+style="mso-spacerun: yes">  </span>определенной при разработке анализатора и,
+если
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>находит<span
+style="mso-spacerun: yes">  </span>соответствующе<span style="mso-spacerun:
+yes">  </span>значение<span style="mso-spacerun: yes">  </span>в<span
+style="mso-spacerun: yes">  </span>ней,<span style="mso-spacerun: yes"> 
+</span>возвращает внутреннее
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>представление<span
+style="mso-spacerun: yes">  </span>лексемы<span style="mso-spacerun: yes"> 
+</span>(команды).<span style="mso-spacerun: yes">  </span>В<span
+style="mso-spacerun: yes">  </span>противном <span style="mso-spacerun:
+yes"> </span>случае<span style="mso-spacerun: yes">  </span>лексема
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>трактуется<span
+style="mso-spacerun: yes">   </span>как<span style="mso-spacerun: yes">  
+</span>переменная.<span style="mso-spacerun: yes">   </span>И,<span
+style="mso-spacerun: yes">   </span>наконец,<span style="mso-spacerun: yes">  
+</span>если<span style="mso-spacerun: yes">  </span>символ<span
+style="mso-spacerun: yes">  </span>не
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>удовлетворяет ни
+одному<span style="mso-spacerun: yes">  </span>из<span style="mso-spacerun:
+yes">  </span>условий,<span style="mso-spacerun: yes">  </span>приведенных<span
+style="mso-spacerun: yes">  </span>выше,<span style="mso-spacerun: yes"> 
+</span>то<span style="mso-spacerun: yes">  </span>он
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>трактуется<span
+style="mso-spacerun: yes">  </span>как<span style="mso-spacerun: yes"> 
+</span>символ конца выражения.<span style="mso-spacerun: yes">  </span>При этом
+значение token
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>обнуляется.
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Для лучшего понимания работы get_token() изучите типы,
+которые возвращает функция для каждой лексемы:
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+11.1pt;margin-left:154.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>PRINT A+100-(B*C)/2
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>--------------------------------
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;tab-stops:123.5pt;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>Лексема<span
+style='mso-tab-count:1'>                           </span>Тип лексемы.
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>PRINT<span
+style='mso-tab-count:1'>                               </span>COMMAND
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>A<span
+style='mso-tab-count:1'>                                       </span>VARIABLE
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>+<span
+style='mso-tab-count:1'>                                        </span>DELIMITER
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>100<span
+style='mso-tab-count:1'>                                     </span>NUMBER
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>-<span
+style='mso-tab-count:1'>                                         </span>DELIMITER
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>(<span
+style='mso-tab-count:1'>                                         </span>DELIMITER
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>B<span
+style='mso-tab-count:1'>                                        </span>VARIABLE
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>*<span
+style='mso-tab-count:1'>                                        </span>DELIMITER
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>C<span
+style='mso-tab-count:1'>                                        </span>VARIABLE
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>)<span
+style='mso-tab-count:1'>                                         </span>DELIMITER
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>/<span
+style='mso-tab-count:1'>                                         </span>DELIMITER
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>2<span
+style='mso-tab-count:1'>                                         </span>NUMBER
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;mso-layout-grid-align:
+none;text-autospace:none'><u><span style='font-size:10.0pt'>null<span
+style='mso-tab-count:1'>                                    </span>DELIMITER <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Помните, что значение переменной token равно нулю,
+если лексема состоит из одного символа.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Некоторые функции интерпретатора нуждаются в повторном
+просмотре лексемы. В этом случае лексема должна быть возвращена во входной
+поток. Функция putback() решает эту задачу.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:33.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/*<span
+style="mso-spacerun: yes">  </span>Возвращает лексему обратно во входной поток
+*/
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void putback()
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>char *t;
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>t = token;
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for(; *t; t++) prog--;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'><span style="mso-spacerun: yes"> </span>
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="7-4">Порядок построения выражений </a></i></font></b></div></p>
+
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Имеется много вариантов анализа и вычисления
+выражений. Для использования полного синтаксического анализатора рекурсивного
+спуска мы должны представить выражение в виде рекурсивной структуры данных. Это
+означает, что выражение определяется в термах самого себя. Если выражение можно
+определить с использованием только символов &quot;+&quot; ,&quot;-&quot;
+,&quot;*&quot; ,&quot;/&quot; и скобок, то все выражения могут быть определены
+с использованием следующих правил:
+
+<p class=MsoNormal align=center style='11.1pt;text-align:center;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Выражение = &gt; Терм [+Терм][-Терм]
+
+<p class=MsoNormal style='margin-left:99.0pt;mso-hyphenate:none;tab-stops:159.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>Терм<span
+style='mso-tab-count:1'>                 </span>= &gt; Фактор [*Фактор][/Фактор]
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:99.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>Фактор<span style="mso-spacerun: yes">   
+</span>= &gt; Переменная, Число или (Выражение)
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Очевидно, что некоторые части в выражении могут
+отсутствовать вообще. Квадратные скобки означают именно такие необязательные
+элементы выражения. Символ =&gt; имеет смысл &quot;продуцирует&quot;.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Фактически, выше перечислены правила, которые обычно
+называют правилами вывода выражения. В соответствии с этими правилами терм
+можно определить так: &quot;Терм является произведением или отношением
+факторов&quot;.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Вы вероятно заметили, что приоритет операторов
+безусловен в описанных выражениях, то есть вложенные элементы включают
+операторы с более высоким приоритетом.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>В связи с этим рассмотрим
+ряд примеров. Выражение
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:192.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>10+5*B
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>содержит два терма:
+&quot;10&quot; и &quot;5*B&quot;. Они, в свою очередь, состоят из
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>трех<span
+style="mso-spacerun: yes">  </span>факторов:<span style="mso-spacerun: yes"> 
+</span>&quot;10&quot;,<span style="mso-spacerun: yes"> 
+</span>&quot;5&quot;<span style="mso-spacerun: yes">  </span>и<span
+style="mso-spacerun: yes">  </span>&quot;B&quot;,<span style="mso-spacerun:
+yes">  </span>содержащих два числа и одну
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>переменную.
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>В другом случае выражение
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:187.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>14*(7-C)
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>содержит<span
+style="mso-spacerun: yes">  </span>два фактора &quot;14&quot;<span
+style="mso-spacerun: yes">  </span>и &quot;(7-C)&quot;,<span
+style="mso-spacerun: yes">  </span>которые,<span style="mso-spacerun: yes"> 
+</span>в свою очередь,
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>состоят из<span
+style="mso-spacerun: yes">  </span>числа и<span style="mso-spacerun: yes"> 
+</span>выражения<span style="mso-spacerun: yes">  </span>в<span
+style="mso-spacerun: yes">  </span>скобках.<span style="mso-spacerun: yes"> 
+</span>Выражение<span style="mso-spacerun: yes">  </span>в скобках
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>вычисляется как разность числа и
+переменной.
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>Можно
+преобразовать правила вывода выражений в множество общих рекурсивных функций,
+что и является зачастую основной формой синтаксического анализатора
+рекурсивного спуска. На каждом шаге анализатор такого типа выполняет
+специфические операции в соответствии с установленными алгебраическими
+правилами. Работу этого процесса можно рассмотреть на примере анализа выражения
+и выполнения арифметических операций. 
+
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>Пусть на вход анализатора поступает
+следующее выражение:
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:176.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>9/3-(100+56)
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>Анализатор в этом случае будет работать по
+такой схеме:
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>1.<span
+style="mso-spacerun: yes">  </span>Берем первый терм: &quot;9/3&quot;.
+
+<p class=MsoNormal style='margin-left:49.5pt;text-align:justify;text-indent:
+-22.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>2. Берем каждый фактор и выполняем деление чисел,
+получаем результат &quot;3&quot;.
+
+<p class=MsoNormal style='margin-left:49.5pt;text-align:justify;text-indent:
+-22.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>3. Берем второй терм: &quot;(100+56)&quot;. В этой
+точке стартует рекурсивный анализ второго выражения.
+
+<p class=MsoNormal style='margin-left:49.5pt;text-align:justify;text-indent:
+-22.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>4. Берем каждый фактор и суммируем их между собой,
+получаем результат 156
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:49.5pt;text-align:justify;text-indent:-22.0pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>5.
+Берем число, вернувшееся из рекурсии, и вычитаем его из первого: 3-156.
+Получаем итоговый результат &quot;-153&quot;.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Если вы немного смущены столь сложной схемой работы
+анализатора, то уверяем вас, что это не так уж страшно. Гораздо страшнее
+оказаться у телевизора, когда транслируют финальный футбольный матч, не имея с
+собой достаточного запаса пива. Поэтому не пугайтесь комплексного подхода.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+288.6pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Вы должны помнить две основные идеи рекурсивного разбора выражений: (1)
+приоритет операторов является безусловным в продукционных правилах и определен
+в них; (2) этот метод синтаксического анализа и вычисления выражений очень
+похож на тот, который вы сами используете для выполнения таких же операций. 
+
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="7-5">Синтаксический анализатор выражений </a></i></font></b></div></p>
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Полный простой синтаксический анализатор рекурсивного
+спуска для целых числовых выражений включает в себя ряд функций. Вы должны
+взять тексты этих функций и сохранить их в своем файле (когда тексты
+анализатора и интерпретатора объединятся получится довольно большой файл,
+поэтому рекомендуется откомпилировать файлы отдельно). Смысл использования
+глобальных переменных будет кратко описан, в процессе обсуждения
+интерпретатора.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Исходный текст простейшего синтаксического анализатора рекурсивного
+спуска для целочисленных выражений приведен ниже.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Синтаксический
+анализатор рекурсивного спуска
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>для
+целочисленных выражений, который содержит
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>ряд включаемых
+переменных
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*/
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#include<span
+style='mso-tab-count:1'>         </span>&quot;setjmp.h&quot;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#include<span
+style='mso-tab-count:1'>         </span>&quot;math.h&quot;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#include<span
+style='mso-tab-count:1'>         </span>&quot;ctype.h&quot;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#include<span
+style='mso-tab-count:1'>         </span>&quot;stdlib.h&quot;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define<span
+style='mso-tab-count:1'>           </span>DELIMITER 1
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define<span
+style='mso-tab-count:1'>           </span>VARIABLE<span style="mso-spacerun:
+yes">  </span>2
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define<span
+style='mso-tab-count:1'>           </span>NUMBER<span style="mso-spacerun:
+yes">    </span>3
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define<span
+style='mso-tab-count:1'>           </span>COMMAND<span style="mso-spacerun:
+yes">   </span>4
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define<span
+style='mso-tab-count:1'>           </span>STRING<span style="mso-spacerun:
+yes">    </span>5
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define<span
+style='mso-tab-count:1'>           </span>QUOTE<span style="mso-spacerun:
+yes">     </span>6
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define<span
+style='mso-tab-count:1'>           </span>EOL<span style="mso-spacerun:
+yes">       </span>9
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:71.5pt;mso-hyphenate:none;tab-stops:125.5pt;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define<span
+style='mso-tab-count:1'>           </span>FINISHED<span style="mso-spacerun:
+yes">  </span>10
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>extern char
+*prog;<span style="mso-spacerun: yes">  </span>/* буфер анализируемого
+выражения */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>extern jmp_buf e_buf;
+/* буфер среды функции longjmp() */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>extern int
+variables[26]; /* переменные */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>extern struct commands
+
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char command[20];
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char tok;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>table[];
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>extern char token[80];
+/* внешнее представление лексемы */
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>extern char
+token_type; /* тип лексемы */
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>extern char tok; /*
+внутреннее представление лексемы */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void
+get_exp(),level2(),level3(),level4(),level5();
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void
+level6(),primitive(),arith(),unary();
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>void serror(), putback();
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Точка входа в
+анализатор. */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void get_exp(result)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int *result;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(!*token) 
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>serror(2); 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>level2(result);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>putback(); /*
+возвращает последнюю считаную
+
+<p class=MsoNormal style='margin-left:159.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>лексему обратно во
+входной поток */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Сложение или
+вычитание двух термов */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void level2(result)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int *result;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>register char op;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>int hold;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>level3(result);
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>while((op=*token)
+== '+' || op == '-') 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>level3(&amp;hold);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>arith(op,result,&amp;hold);
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Вычисление
+произведения или частного двух фвкторов */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void level3(result)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int *result;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>register char op;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>int hold;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>level4(result);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>while((op = *token) ==
+'+' || op == '/' || op == '%') 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>level4(&amp;hold);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>arith(op,result,&amp;hold);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>/*
+Обработка степени числа (целочисленной) */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void level4(result)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int *result;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>int hold;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>level5(result);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*token== '^') 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>level4(&amp;hold);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>arith('^', result,
+&amp;hold);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Унарный + или - */
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>void level5(result) 
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int *result;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>register char op;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>op = 0;
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if((token_type==DELIMITER)
+&amp;&amp; *token=='+' || *token=='-') 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>op = *token;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>level6(result);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(op)
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unary(op, result);
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>/*
+Обработка выражения в круглых скобках */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void level6(result)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int *result;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if((*token == '(')
+&amp;&amp; (token_type == DELIMITER)) 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>level2(result);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*token != ')')
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>serror(1);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>else
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>primitive(result);
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Определение
+значения переменной по ее имени */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void primitive(result)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int *result;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>switch(token_type) 
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case VARIABLE:
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*result =
+find_var(token);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case NUMBER:
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*result<span
+style="mso-spacerun: yes">  </span>= atoi(token);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>default:
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>serror(0);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>/*
+Выполнение специфицированной арифметики */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void arith(o, r, h)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char o;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int *r, *h;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>register int t, ex;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>switch(o)<span style="mso-spacerun: yes"> 
+</span>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case '-':
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*r = *r-*h;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case '+':
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*r = *r+*h;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case '*':
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*r = *r * *h;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case '/':
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*r = (*r)/(*h);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case '%':
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>t = (*r)/(*h);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*r = *r-(t*(*h));
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case '^':
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>ex =*r;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*h==0) 
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*r = 1;
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>for(t=*h-1;
+t&gt;0; --t) *r = (*r) * ex;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Изменение знака */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void unary(o, r)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char o;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int *r;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(o=='-') *r = -(*r);
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Поиск значения
+переменной */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int find_var(s)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *s;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(!isalpha(*s))
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>serror(4); /* не
+переменная */
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return 0;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return
+variables[toupper(*token)-'^'];
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* выдать сообщение об
+ошибке */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void serror(error)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int error;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>static char *e[]= 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Синтаксическая
+ошибка&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Непарные круглые
+скобки&quot;,
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>&quot;Это не выражениеt&quot;, 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Предполагается
+символ равенства&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Не
+переменная&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Таблица меток переполнена&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Дублирование
+меток&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Неопределенная
+метка&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Необходим
+оператор THEN&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Необходим
+оператор TO&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Уровень
+вложенности цикла FOR слишком велик&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;NEXT не
+соответствует FOR&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;Уровень
+вложенности GOSUB слишком велик&quot;,
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;RETURN не
+соответствует GOSUB&quot;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>printf(&quot;&amp;4%s\n&quot;,e[error]);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>longjmp(e_buf, 1); /*
+возврат в точку сохранения */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Чтение лексемы. */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token()
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>register char *temp;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>token_type=0; tok=0;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>temp=token;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*prog=='\0')<span
+style="mso-spacerun: yes">  </span>/* Конец файла */
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*token=0;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>tok = FINISHED;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return(token_type=DELIMITER);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>while(iswhite(*prog)) ++prog; /* пропуск
+пробелов */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*prog=='\r')<span
+style="mso-spacerun: yes">  </span>/* коней строки программы */
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>++prog; ++prog;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>tok = EOL;
+*token='\r';
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>token[1]='\n';
+token[2]=0;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return (token_type =
+DELIMITER);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(strchr(&quot;+-^/%=;(),&gt;&lt;&quot;,
+*prog)) /* разделитель */
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*temp=*prog;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>prog++; /* переход на
+следующую позицию */
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>temp++;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*temp=0;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return
+(token_type=DELIMITER);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*prog=='&quot;')<span
+style="mso-spacerun: yes">  </span>/* строка кавычек */
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>prog++;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>while(*prog !=
+'&quot;' &amp;&amp; *prog!='\r') *temp++=*prog++;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*prog=='\r')
+serror(1);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>prog++;*temp=0;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return(token_type=QUOTE);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>if(isdigit(*prog))<span
+style="mso-spacerun: yes">  </span>/* число */ 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>while(!isdelim(*prog))
+*temp++=*prog++;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*temp = '\0';
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return(token_type =
+NUMBER);
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(isalpha(*prog))<span
+style="mso-spacerun: yes">  </span>/* переменная или команда */
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>while(!isdelim(*prog))
+*temp++=*prog++;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>token_type=STRING;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>*temp = '\0';
+
+<p class=MsoNormal style='margin-left:44.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* просматривается,
+если строка - переменная или команда */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if
+(token_type==STRING) 
+
+<p class=MsoNormal style='margin-left:38.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>tok=look_up(token); /*
+Преобразование во внутренний формат */
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if (!tok) token_type =
+VARIABLE;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>else token_type =
+COMMAND; /* это команда */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return token_type;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Возврат лексемы во
+входной поток */
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void putback()
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>char *t;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>t = token;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for(; *t; t++) prog--;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>/*
+Поиск соответствия внутреннего формата для
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>текущей лексемы в
+таблице лексем.
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*/
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>look_up(s)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *s;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>register int i,j;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>char *p;
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>/*
+преобразование к нижнему регистру */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>p = s;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>while(*p) *p = tolower(*p); p++; 
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* просматривается,
+если лексема обнаружена в
+
+<p class=MsoNormal style='margin-left:99.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>таблице */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for(i=0;
+*table[i].command; i++)
+
+<p class=MsoNormal style='margin-left:82.5pt;text-indent:11.0pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>if(!strcmp(table[i].command, s)) return table[i].tok; return 0; /*
+нераспознанная команда */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Возвращает
+&quot;истину&quot;, если &quot;c&quot; разделитель */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>isdelim(c)
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>char c; 
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(strchr(&quot;
+;,+-&lt;&gt;/*%^=()&quot;,c) || c==9 || c=='\r' || c==0)
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return 1;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return 0;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Возвращает 1, если
+&quot;с&quot; пробел или табуляция */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>iswhite(c)
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char c;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(c==' ' || c=='\t')
+return 1;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>else return 0;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Анализатор поддерживает следующие операторы:
+&quot;+&quot;, &quot;-&quot;, &quot;*&quot;, &quot;/&quot;, &quot;%&quot;,
+целочисленный показатель степени (^) и унарный минус. Все эти операции могут
+использоваться в сочетании с круглыми скобками. Вы, вероятно, заметили, что в
+программе имеются функции шести уровней, которые работают точно также как
+функция primitive(), вращающая значение числа. Помимо этих функций, реализующих
+арифметические операции, в состав программы включены функции arith() и unary(),
+а также get_token().
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>При вычислении выражения prog указывает на начало
+строки, содержащей выражение, и вызывает get_exp() с адресом переменной, в
+которую вы хотите поместить результат.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Обратите особое внимание на функцию serror(), которая
+используется для выдачи сообщений об ошибках. При обнаружении синтаксической
+ошибки serror() вызывается с номером этой ошибки в качестве аргумента. Ошибка с
+кодом 0, которой соответствует сообщение &quot;синтаксическая ошибка&quot;,
+выдается в том случае, когда тип ошибки нельзя определить более конкретно. В
+других случаях ошибка уточняется. Заметьте, что serror() заканчивается вызовом
+функции longjmp().
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Функция logjmp() выполняет нелокальный переход,
+возвращаясь в точку, определенную с помощью функции setjmp(). Функция setjmp()
+включена в исходный текст интерпретатора. Первый аргумент функции logjmp()
+является буфером среды, инициированной с помощью setjmp(). Второй аргумент -
+это значение, которое определяется при передаче управления из setjmp() обратно
+в точку ее вызова. Как это делается вы, увидите позже.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+44.4pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Использование ljgjmp() упрощает обработку ошибок, так как
+программы-анализаторы не должны аварийно завершаться при обнаружении ошибки.
+Если ваш компилятор Си не поддерживает функции setjmp() и logjmp(), то каждая
+функция при обнаружении ошибок должна выполнять возврат в точку возникновения
+ошибки самостоятельно. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="7-6">Как анализатор обрабатывает переменные </a></i></font></b></div></p>
+
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Как было сказано раньше, интерпретатор языка SMALL
+BASIC распознает переменные с именами только от &quot;A&quot; до &quot;Z&quot;.
+Каждой переменной соответствует элемент массива variables, состоящего из 26
+элементов. Этот массив определен в тексте интерпретатора, как показано ниже, и
+инициализируется нулевыми значениями.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:44.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int
+variables[26]=<span style="mso-spacerun: yes">    </span>/* 26 переменных
+пользователя, A-Z */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>0, 0, 0, 0, 0, 0, 0,
+0, 0, 0,
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>0, 0, 0, 0, 0, 0, 0,
+0, 0, 0,
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>0, 0, 0, 0, 0, 0
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:44.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>;
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Так как именами переменных являются буквы от
+&quot;A&quot; до &quot;Z&quot;, то индексирование массива variables можно легко
+осуществить путем вычитания из соответствующих значений имен переменных в коде
+ASCII кода символа 'A'. Функция find_var(), определяющая значение переменной в
+зависимости от ее имени, представлена ниже.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:49.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Определение
+значения переменной по ее имени*/
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int find_var(s)
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *s;
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(!isalpha(*s))
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>serror(4); /* это не
+переменная */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return 0;
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return
+variables[toupper(*token)-'A'];
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;244.2pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>Эта
+функция допускает использование более длинных имен, но только первая буква
+имени переменной является значащей. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="7-7">Интерпретатор языка Small Basic </a></i></font></b></div></p>
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Разрабатываемый интерпретатор будет распознавать
+следующие ключевые слова языка программирования BASIC:
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>PRINT
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>INPUT
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>IF
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>THEN
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>FOR
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>NEXT
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>TO
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>GOTO
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>GOSUB
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>RETURN
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>END
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Внутреннее представление этих команд (плюс значение
+EOL для конца строки и FINISHED для сигнализации о конце программы)
+определяется так:
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define PRINT<span
+style="mso-spacerun: yes">   </span>1
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define INPUT<span
+style="mso-spacerun: yes">   </span>2
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+IF<span style='mso-tab-count:1'>                         </span>3
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define THEN<span
+style="mso-spacerun: yes">    </span>4
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+FOR<span style='mso-tab-count:1'>                    </span>5
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define NEXT<span
+style="mso-spacerun: yes">    </span>6
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+TO<span style='mso-tab-count:1'>                       </span>7
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define GOTO<span
+style="mso-spacerun: yes">    </span>8
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:151.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+EOL<span style='mso-tab-count:1'>                     </span>9
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define FINISHED 10
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define GOSUB<span
+style="mso-spacerun: yes">    </span>11
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define RETURN<span
+style="mso-spacerun: yes">   </span>12
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;tab-stops:157.0pt;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define END<span
+style='mso-tab-count:1'>                       </span>13
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Для преобразования внешнего представления лексем во
+внутренний формат используется вспомагательная структура table.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>struct commands<span
+style="mso-spacerun: yes">  </span>/* Вспомогательная структура ключевых
+
+<p class=MsoNormal style='margin-left:170.5pt;mso-hyphenate:none;tab-stops:
+374.5pt;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>слов анализатора<span style='mso-tab-count:1'>                                                           </span>*/
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char command[20];
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char tok;
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>table[] =<span style="mso-spacerun: yes"> 
+</span>/* Таблица обрабатывает команды, введенные */
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;print&quot;,PRINT,
+/* на нижнем регистре */
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;input&quot;,INPUT,
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;if&quot;,IF,
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;then&quot;,THEN,
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;goto&quot;,GOTO,
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;for&quot;,FOR,
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;next&quot;,NEXT,
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;to&quot;,TO,
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;gosub&quot;,GOSUB,
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>&quot;return&quot;,RETURN, 
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;end&quot;,END,
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>&quot;&quot;,END<span
+style="mso-spacerun: yes">  </span>/* mark end of table */
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>;
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Обратите внимание на то, что признак конца файла
+(нулевая строка) помещен в конец таблицы.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:27.5pt;.0001pt;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Функция look_up() возвращает внутреннее представление каждой лексемы
+или символа '\0', если таковая не обнаружена.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Преобразование
+каждой лексемы из таблицы лексем
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>во внутреннее
+представление.
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*/
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>look_up(s)
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *s;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>register int i,j;
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *p;
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>/*
+преобразование в символы нижнего регистра */
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>p =s;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>while(*p) *p = tolower(*p); p++; 
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* если лексема
+обнаружена в таблице */
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for(i=0;
+*table[i].command; i++)
+
+<p class=MsoNormal style='margin-left:66.0pt;text-indent:22.0pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>if(!strcmp(table[i].command, s)) return table[i].tok; return 0; /*
+команда не распознана */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Интерпретатор языка SMALL BASIC не поддерживает
+редактор текстов, поэтому вы должны создавать программы на языке BASIC,
+используя стандартный текстовый редактор.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Каждая программа считывается и выполняется с помощью интерпретатора.
+Функция, которая загружает программу, называется load_program().
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:49.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Загрузка программы
+*/
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>load_program(p, fname)
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *p;
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *fname;
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:202.4pt;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>FILE *fp; int i=0;
+if(!(fp=fopen(fname, &quot;rb&quot;))) return 0;
+
+<p class=MsoNormal style='11.1pt;margin-right:202.4pt;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>i = 0;
+
+<p class=MsoNormal style='0cm;margin-right:202.4pt;
+0cm;margin-left:71.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>do 
+
+<p class=MsoNormal style='0cm;margin-right:154.0pt;
+0cm;margin-left:88.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*p = getc(fp); p++;
+i++;
+
+<p class=MsoNormal style='0cm;margin-right:202.4pt;
+0cm;margin-left:71.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>while(!feof(fp) &amp;&amp; i&lt;PROG_SIZE);
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*(p-2) = '\0'; /*
+Символ конца загружаемой программы */ fclose(fp);
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>return 1; 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="7-8">Основной цикл работы анализатора </a></i></font></b></div></p>
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Все интерпретаторы выполняют операции путем считывания
+лексемы программы и выбора необходимой функции для ее выполнения. Основной цикл
+работы для интерпретатора языка SMALL BASIC выглядит следующим образом.
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>do 
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>token_type =
+get_token();
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Проверка на
+соответствие оператору языка */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if (token_type ==
+VARIABLE) 
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>putback(); /* возврат
+переменной во входной поток */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>assignment(); /* длжен
+быть оператор присваивания */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>else /* это команда */ 
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>switch(tok) 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case PRINT:
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>print();
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case GOTO:
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>exec_if();
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case FOR:
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>exec_for();
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case NEXT:
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>next();
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case INPUT:
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>input();
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case GOSUB:
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>gosub();
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case RETURN:
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>greturn();
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>break;
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>case END:
+
+<p class=MsoNormal style='margin-left:104.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>exit(0);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>while (tok != FINISHED); 
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>Сначала
+лексема считывается из программы. Для удобства анализа каждая лексема
+располагается на отдельной строке. Если лексема является переменной, то, следуя
+синтаксису языка, за ней должен следовать оператор присваивания (SMALL BASIC не
+поддерживает старомодную команду LET). В противном случае, лексема считается
+командой и с помощью оператора case в зависимости от значения tok происходит
+выбор соответствующей
+
+<p class=MsoNormal style='0cm;margin-right:0cm;610.5pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>команды. Посмотрите, как работает каждая
+из них. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="7-9">Команда присваивания значений </a></i></font></b></div></p>
+
+
+<p class=MsoNormal style='margin-left:27.5pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>В языке BASIC основной формой оператора присваивания
+является следующая:
+
+<p class=MsoNormal style='11.1pt;margin-right:0cm;
+11.1pt;margin-left:132.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>&lt;имя
+переменной&gt;=&lt;выражение&gt;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>Функция assignment() поддерживает этот тип
+присваивания.
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Присвоить значение
+переменной */
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>assignment()
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int var, value;
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* получить имя
+переменной */
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(!isalpha(*token)) 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>serror(4); /* это не
+переменная */
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>/*
+поиск индекса переменной в массиве */
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>var = toupper(*token)-'A';
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* считать символ
+равенства*/
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>get_token();
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if(*token!='=') 
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>serror(3);
+
+<p class=MsoNormal style='margin-left:93.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>return;
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* считать присваемое
+переменной значение */
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>get_exp(&amp;value);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* присвоить
+значение*/
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>variables[var] =
+value;
+
+</body>
+
+</html><!--Saved from http://mymanual.narod.ru>

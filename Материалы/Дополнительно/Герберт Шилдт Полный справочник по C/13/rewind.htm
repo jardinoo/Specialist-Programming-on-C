@@ -1,0 +1,30 @@
+<HTML><HEAD>
+<TITLE>Функция rewind</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция rewind</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+void rewind(FILE *<I>stream</I>);
+</PRE>
+<P class="tj">Функция <KBD>rewind()</KBD> перемещает указатель текущей позиции файла в начало заданного потока. Она также очищает связанные с потоком <I>stream</I> признаки конца файла и ошибок.
+<H2>Пример</H2>
+<P class="tj">Данная функция дважды читает поток, адресованный указателем <KBD>fp</KBD>, и каждый раз выводит файл на экран.
+<PRE>
+void re_read(FILE *fp)
+{
+  /* первое чтение */
+  while(!feof(fp)) putchar(getc(fp));
+
+  rewind(fp);
+
+  /* второе чтение */
+  while(!feof(fp)) putchar(getc(fp));
+}
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="fseek.htm">fseek()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

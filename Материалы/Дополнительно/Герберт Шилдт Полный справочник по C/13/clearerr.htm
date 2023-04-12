@@ -1,0 +1,64 @@
+<HTML><HEAD>
+<TITLE>Функция clearerr</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция clearerr</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+void clearerr(FILE *<I>stream</I>);
+</PRE>
+<P class="tj">Функция <KBD>clearerr()</KBD> сбрасывает (т.е. устанавливает равным нулю) признак ошибки, связанный с потоком, на который указывает элемент <I>stream</I>. При этом также сбрасывается признак конца файла.
+<P class="tj">При успешном обращении к функции <KBD>fopen()</KBD> признаки ошибок для каждого потока первоначально устанавливаются равными нулю. При работе с файлами ошибки могут возникать по различным причинам, многие из которых зависят от конкретной системы. Истинную природу ошибки можно определить в результате вызова функции <KBD>perror()</KBD>, которая выводит сообщение, описывающее ошибку (см. описание функции <KBD>perror()</KBD>).
+<H2>Пример</H2>
+<P class="tj">Приведенная ниже программа копирует один файл в другой. При возникновении ошибки выводится сообщение, поясняющее ее природу.
+<PRE>
+/* Копирование  одного файла  в  другой. */
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argc, char *argv[])
+{
+  FILE *in, *out;
+  char ch;
+
+  if(argc!=3) {
+    printf("He введено имя файла.\n");
+    exit(1);
+  }
+
+  if((in=fopen(argv[1], "rb")) == NULL) {
+    printf("Невозможно открыть входной файл.\n");
+    exit(1);
+  }
+  if((out=fopen(argv[2], "wb")) == NULL) {
+    printf("Heвoзмoжнo открыть выходной файл.\n");
+    exit(1);
+  }
+
+  while(!feof(in)) {
+    ch = getc(in);
+    if(ferror(in)) {
+      printf("Ошибка чтения");
+      clearerr(in);
+      break;
+    } else {
+      if(!feof(in)) putc(ch, out);
+      if(ferror(out)) {
+        printf("Ошибка записи");
+        clearerr(out);
+        break;
+      }
+    }
+  }
+  fclose(in);
+  fclose(out);
+
+  return 0;
+}
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="feof.htm">feof()</A>  <A href="ferror.htm">ferror()</A>  <A href="perror.htm">perror()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

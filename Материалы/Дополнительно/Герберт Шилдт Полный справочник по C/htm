@@ -1,0 +1,49 @@
+=== Текст выравненный по ширине с красной строкой ===
+<P class="tj">
+
+=== Текст выравненный по ширине без красной строки ===
+<P class="t">
+
+=== Ссылка ===
+<A href=".htm"></A>
+
+=== Примечание в тексте ===
+<SUP><A href="#11" name="1">[1]</A></SUP>
+
+<P><IMG src="../work/sup.bmp" alt="----------">
+<BLOCKQUOTE>
+<P class="tj"><SUP><A href="#1" name="11">[1]</A></SUP>
+</BLOCKQUOTE>
+
+=== На заметку ===
+<TABLE align=center border=1 width=100%>
+<TR><TD align=center bgcolor=skyblue width=7%>На заметку<TD class="tj">
+</TABLE>
+
+=== Листинг программы ===
+<PRE class="ex">
+</PRE>
+
+=== Результат программы и прочее ===
+<PRE></PRE>
+
+=== Таблица ===
+<TABLE align=center border=1 width=100%>
+<CAPTION><B></B></CAPTION>
+<TR><TH><I></I><TH><I></I>
+<TR><TD><TD>
+</TABLE>
+
+=== Рисунок PNG ===
+<TABLE align=center width=100%>
+<CAPTION align=bottom><P class="tj"><I>Рис. .. </I>
+<TR><TD align="center"><IMG src="../work/pic_.png" alt=""><P>
+</TABLE>
+
+=== Рисунок ASCII ===
+<TABLE align=center width=100%>
+<CAPTION align=bottom><P class="tj"><I>Рис. .. </I>
+<TR><TD>
+<PRE>
+</PRE>
+</TABLE>

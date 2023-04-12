@@ -1,0 +1,22 @@
+<HTML><HEAD>
+<TITLE>Функция putc</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция putc</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+int putc(int <I>ch</I>, FILE *<I>stream</I>);
+</PRE>
+<P class="tj">Функция <KBD>putc()</KBD> записывает в поток вывода, адресуемый параметром <I>stream</I>, символ, содержащийся в младшем байте параметра <I>ch</I>. Поскольку в момент вызова символьные аргументы преобразуются в целые, их вполне можно использовать в качестве аргументов функции <KBD>putc()</KBD>. Функция <KBD>putc()</KBD> часто реализуется как макрос.
+<P class="tj">При успешном выполнении функция <KBD>putc()</KBD> возвращает записанный символ, а в случае ошибки — значение <KBD>EOF</KBD>. Если поток вывода был открыт в двоичном режиме, <KBD>EOF</KBD> тоже может быть воспринято как <KBD>ch</KBD>. Поэтому в данном случае для выявления ошибки необходимо использовать функцию <KBD>ferror()</KBD>.
+<H2>Пример</H2>
+<P class="tj">Следующий цикл записывает символы в строку <KBD>str</KBD> потока, заданного идентификатором <KBD>fp</KBD>. Символ конца строки не записывается.
+<PRE>
+for( ;*str; str++) putc(*str; fp);
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="fgetc.htm">fgetc()</A>  <A href="fputc.htm">fputc()</A>  <A href="getchar.htm">getchar()</A>  <A href="putchar.htm">putchar()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

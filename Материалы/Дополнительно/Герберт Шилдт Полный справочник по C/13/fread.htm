@@ -1,0 +1,59 @@
+<HTML><HEAD>
+<TITLE>Функция fread</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция fread</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+size_t fread(void *<I>buf</I>, size_t <I>size</I>, size_t <I>count</I>, FILE *<I>stream</I>);
+</PRE>
+<P class="tj">Функция <KBD>fread()</KBD> читает из потока, адресуемого указателем <I>stream</I>, <I>count</I> объектов длиной <I>size</I> байт и размещает их в массиве <I>buf</I>. Затем указатель текущей позиции файла увеличивается на число, равное прочитанному количеству символов.
+<P class="tj">В версии C99 к параметрам <I>buf</I> и <I>stream</I> применен квалификатор <KBD>restrict</KBD>.
+<P class="tj">Функция <KBD>fread()</KBD> возвращает число реально прочитанных элементов. Если оказалось, что прочитано меньше элементов, чем требовалось при вызове, значит, либо произошла ошибка при выполнении операции, либо был достигнут конец файла. Определить, что именно произошло, можно с помощью функции <KBD>feof()</KBD> или <KBD>ferror()</KBD>.
+<P class="tj">Если поток открывается для операций в текстовом режиме, могут выполняться преобразования некоторых последовательностей символов, например, комбинация кодов возврата каретки (ASCII 13) и конца строки (ASCII 10) преобразуется в разделитель строк.
+<H2>Пример</H2>
+<P class="tj">Следующая программа записывает в дисковый файл с названием TEST пять чисел с плавающей запятой, взяв их из массива <KBD>bal</KBD>. Затем она читает их из файла и записывает обратно в массив.
+<PRE>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void)
+{
+  FILE *fp;
+  float bal[5] = { 1.1F, 2.2F, 3.3F, 4.4F, 5.5F };
+  int i;
+
+  /* запись значений */
+  if((fp=fopen("test", "wb"))==NULL) {
+    printf("Не удаётся отрыть файл.\n");
+    exit(1);
+  }
+
+  if(fwrite(bal, sizeof(float), 5, fp) != 5) 
+    printf("Ошибка при записи файла.");
+  fclose(fp);
+
+  /* чтение значений */
+  if((fp=fopen("test", "rb"))==NULL) {
+    printf("Не удаётся отрыть файл.\n");
+    exit(1);
+  }
+
+  if(fread(bal, sizeof(float), 5, fp) != 5) {
+    if(feof(fp)) printf("Преждевременное достижение конца файла.");
+    else printf("Ошибка при чтении файла.");
+  }
+  fclose(fp);
+
+  for(i=0; i&lt;5; i++)
+    printf("%f ", bal[i]);  
+
+  return 0;
+}
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="fwrite.htm">fwrite()</A>  <A href="fopen.htm">fopen()</A>  <A href="fscanf.htm">fscanf()</A>  <A href="fgetc.htm">fgetc()</A>  <A href="getc.htm">getc()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

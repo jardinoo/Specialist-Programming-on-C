@@ -1,0 +1,43 @@
+<HTML><HEAD>
+<TITLE>Функция fgets</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция fgets</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+char *fgets(char *<I>str</I>, int <I>num</I>, FILE *<I>stream</I>);
+</PRE>
+<P class="tj">Функция <KBD>fgets()</KBD> читает из входного потока <I>stream</I> не более <I>num-1</I> символов и помещает их в массив символов, адресуемый указателем <I>str</I>. Символы читаются до тех пор, пока не будет прочитан символ новой строки или значение <KBD>EOF</KBD>, либо пока не будет достигнут заданный предел. По завершении чтения символов сразу же за последним из них размещается нулевой символ. Символ новой строки сохраняется и становится частью массива, адресуемого элементом <I>str</I>.
+<P class="tj">В версии C99 к параметрам <I>str</I> и <I>stream</I> применен квалификатор <KBD>restrict</KBD>.
+<P class="tj">При успешном выполнении функция <KBD>fgets()</KBD>  возвращает значение <I>str</I>, а в случае сбоя — нулевой указатель. В случае ошибки содержимое массива, к которому отсылает  указатель <I>str</I>, не определено. Поскольку функция <KBD>fgets()</KBD> возвращает нулевой указатель и при возникновении ошибки, и при достижении конца файла, то для выяснения, что же произошло на самом деле, необходимо использовать функцию <KBD>feof()</KBD> или <KBD>ferror()</KBD>.
+<H2>Пример</H2>
+<P class="tj">Приведенная программа использует функцию <KBD>fgets()</KBD> для вывода содержимого текстового файла, имя которого задано первым аргументом командной строки.
+<PRE>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argc, char *argv[])
+{
+  FILE *fp;
+  char str[128];
+
+  if((fp=fopen(argv[1], "r"))==NULL) {
+    printf("Не удается открыть файл.\n");
+    exit(1);
+  }
+
+  while(!feof(fp)) {
+    if(fgets(str, 126, fp)) printf("%s", str);
+  }
+
+  fclose(fp);
+
+  return 0;
+}
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="fputs.htm">fputs()</A>  <A href="fgetc.htm">fgetc()</A>  <A href="gets.htm">gets()</A>  <A href="puts.htm">puts()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

@@ -1,0 +1,157 @@
+<html>
+
+<head>
+   <TITLE>C</TITLE>
+</head>
+
+<body bgcolor="#00ffff">
+
+<a name="top"></a>
+<p><div align="center"><b><font size="+1" face="Arial"><a name="2">Глава 2. Всплываюшие окна </a></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;text-align:justify;text-indent:27.5pt;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Всплывающие окна могут придать вашей программе тот
+профессиональный вид, который не может быть достигнут другими средствами.
+Всплывающие окна создают впечатление, что вы, как программист, в совершенстве
+владеете экраном. А так как пользователь обычно судит о программе по ее
+пользовательскому интерфейсу, то это положительное впечатление распространится
+и на всю программу в целом.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Данная глава содержит описание полного набора функций
+для всплывающих окон, которые позволят вам создавать и использовать
+множественные окна.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Программы управления окнами используют функции прямого
+доступа к видеопамяти, представленные в Главе 1. Из-за того, что окна в
+большинстве случаев, имеют значительно больший размер, чем меню, то
+использование функций из ROM-BIOS просто невозможно, - даже на самых быстрых
+компьютерах.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Однако перед рассмотрением оконных функций очень важно правильно
+понять, что же такое всплывающие окна и как они используются. 
+
+<br><br><a href="#top">наверх</a>
+<p><div align="center"><b><font size="+1"><i><a name="2-2">Теория всплывающих окон.
+</a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;text-align:justify;text-indent:27.5pt;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Всплывающее окно представляет собой часть экрана,
+используемую для специальных целей. Перед появлением окна текущее содержимое
+экрана сохраняется и лишь после этого производится отображение окна.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>При завершении программы, использующей данное окно,
+это окно удаляется, а первоначальное содержимое экрана восстанавливается.
+(Данный процесс аналогичен появлению всплывающих меню). Вполне возможно
+одновременное отображение на экране нескольких окон.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Хотя это и не обязательно, но все хорошие программы,
+работающие с окнами, позволяют интерактивно изменять размеры и позицию окна на
+экране. Следовательно, оконные функции допускают, что окно не всегда будет
+находиться в одном и том же месте и иметь один и тот же размер.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Разработка функций, управляющих окнами, является
+сложной задачей из-за необходимости обеспечения запрета для прикладной
+программы осуществлять вывод за границы окна. Поскольку размеры окна могут
+изменяться без &quot;сообщения&quot; об этом прикладной программе, то именно
+функции управления окнами, а не прикладная программа, должны предохранить от
+выхода за границы. Следовательно, все обычные функции Си, осуществляющие
+ввод/вывод на консоль (например, printf() и lets() ) , не могут быть
+использованы и должны быть заменены на функции, ориентированные на ввод/вывод с
+использованием окон.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Теория использования окон крайне проста. Каждая
+отдельная задача программы использует свое собственное окно. При запуске задачи
+активируется и ее окно. При завершении работы задачи - ее окно удаляется. Если
+же задача прерывается, то, хотя ее работа приостанавливается, но ее окно не
+удаляется, а инициируемая прерыванием задача, просто создает свое окно поверх
+предыдущего. (Обычно те задачи, которые не используют окон, очищают экран. Это
+приводит к рассеиванию внимания пользователя. В то же время при использовании
+окон подобные прерывания выглядят как временные паузы).
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+33.3pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Чтобы понять, как окна могут быть наиболее эффективно использованы,
+предположим, что вы разработали текстовый редактор, включающий ряд
+дополнительных функций, таких как &quot;записная книжка&quot;, калькулятор с
+четырьмя математическими операциями и конвертер чисел из десятичного в
+шестнадцатиричное представление. Так как все эти функции в действительности не
+относятся к операциям редактирования текста, то их реализация тесно
+переплетается с концепцией всплывающих окон. Таким образом получается, что
+использование какой-либо из вспомогательных функций лишь приостанавливает
+основную задачу (редактирование), а не прерывает ее. 
+
+<br><br><a href="#top">наверх</a>
+<p><div align="center"><b><font size="+1"><i><a name="2-3">Оконные структуры.
+</a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:27.5pt;.0001pt;text-align:justify;text-indent:27.5pt;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Правильная реализация всплывающих окон требует, чтобы
+все атрибуты, необходимые для описания их границ, были в любое время доступны
+всем оконным функциям. Для достижения этого мы будем использовать концепцию
+структуры, аналогичную той, которая использовалась при описании функций
+спускающихся меню. Однако структура окна содержит некоторую специфическую
+информацию. Ниже показан массив, используемый для хранения структур.
+
+<p class=MsoNormal style='11.1pt;margin-right:4.4pt;
+0cm;margin-left:99.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>struct window_frame
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int startx, endx,
+starty, endy; /*позиция окна*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int curx, cury;
+/*текущая позиция курсора в окне*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unsigned chsr *p;
+/*указатель буфера*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *header; /*имя
+окна*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int border;
+/*включение/выключение границ*/
+
+<p class=MsoNormal style='0cm;margin-right:4.4pt;0cm;
+margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int active; /*на
+экране или невидимо*/
+
+</body>
+</html><!--Saved from http://mymanual.narod.ru>

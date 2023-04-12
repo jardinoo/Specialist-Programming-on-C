@@ -1,0 +1,37 @@
+<HTML><HEAD>
+<TITLE>Функция fclose</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция fclose</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+int fclose(FILE *<I>stream</I>);
+</PRE>
+<P class="tj">Функция <KBD>fclose()</KBD> закрывает файл, связанный с потоком <I>stream</I>, и дозаписывает его буфер. После обращения к функции <KBD>fclose()</KBD> элемент <I>stream</I> больше не связан с файлом, и все автоматически выделенные буфера освобождаются.
+<P class="tj">При успешном выполнении функция <KBD>fclose()</KBD> возвращает нуль; в противном случае возвращается значение <KBD>EOF</KBD>. Попытка закрыть уже закрытый файл расценивается как ошибка. В случае прекращения доступа к носителю данных до закрытия файла, как и при недостатке свободного пространства на диске, будет сгенерирована ошибка.
+<H2>Пример</H2>
+<P class="tj">Следующая программа открывает и закрывает файл.
+<PRE>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(void)
+{
+  FILE *fp;
+
+  if((fp=fopen("test", "rb"))==NULL) {
+    printf("He удается открыть  файл.\n");
+    exit(1);
+  }
+
+  if(fclose(fp)) printf("Ошибка при закрытии файла.\n");
+
+  return 0;
+}
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="fopen.htm">fopen()</A>  <A href="freopen.htm">freopen()</A>  <A href="fflush.htm">fflush()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>

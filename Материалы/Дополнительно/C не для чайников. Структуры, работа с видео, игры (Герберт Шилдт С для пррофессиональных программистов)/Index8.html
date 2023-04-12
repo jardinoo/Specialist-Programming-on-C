@@ -1,0 +1,2902 @@
+<html>
+
+<head>
+   <TITLE>C</TITLE>
+</head>
+
+<body bgcolor="#00ffff">
+<a name="top"></a>
+<p><div align="center"><b><font size="+1" face="Arial"><a name="8">Глава 8. О манипулировании экраном и выработке звука </a></font></b></div></p>
+
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>На всем протяжении этой книги мы касались, в основном,
+тех аспектов программирования на Си, которые могут заинтересовать
+профессиональных программистов, чье основное занятие программирование на Си.
+Так как возможности программы по взаимодействию с пользователем часто ограничиваются
+возможностями, представленными в рамках пользовательского интерфейса, то в этой
+главе содержатся завершенные сведения, так сказать, окончательная точка зрения
+на возможность и целесообразность манипулирования с экраном дисплея при
+разработке пользовательского интерфейса. Основное внимание в этой главе
+уделяется вопросам отображения различных фрагментов текста в разных цветах.
+Дополнительно в этой главе рассматриваются некоторые другие вопросы
+программирования пользовательского интерфейса такие, как изменение размера и
+формы курсора, скроллинг (прокрутка) части текста, сохранение содержимого
+экрана в виде дискового файла. Использование со вкусом звуковых возможностей
+компьютера позволяет в значительной мере &quot;оживить&quot; работу пользователя
+с вашей программой, а также акцентировать внимание пользователя на ряде
+моментов и ситуаций, возникающих во время работы. В связи с этим в главу
+включен параграф, поясняющий возможности пользователя по генерации звуков
+различных частот и созданию различных звуковых эффектов с использованием
+динамика компьютера.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;tab-stops:301.0pt 367.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>Подпрограммы,
+описанные<span style="mso-spacerun: yes">    </span>в<span style="mso-spacerun:
+yes">    </span>этой<span style='mso-tab-count:1'>                                       </span>главе,<span
+style='mso-tab-count:1'>                   </span>являются
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>машинно-зависимыми.<span
+style="mso-spacerun: yes">  </span>Они могут функционировать на IBM PC, XT, AT,
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+233.1pt;margin-left:27.5pt;text-align:justify;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>PS/2 и совместимых с
+ними моделях. Большинство из подпрограмм требуют наличия в вашей конфигурации
+компьютера цветного дисплея (адаптера). Если вы имеете несовместимый с
+вышеперечисленными моделями компьютер, то вам необходимо будет внести в
+подпрограммы соответствующие изменения. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-1">Использование цвета в текстовом режиме </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Ранее вы могли видеть великолепные, профессионально
+написанные программы, которые не используют цветовые возможности. Как вы уже
+уяснили из<span style="mso-spacerun: yes">  </span>поддерживает различные
+видеорежимы. Если вы имеете в своей
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>системе<span
+style="mso-spacerun: yes">  </span>цветной<span style="mso-spacerun: yes"> 
+</span>адаптер,<span style="mso-spacerun: yes">  </span>режим<span
+style="mso-spacerun: yes">  </span>работы<span style="mso-spacerun: yes"> 
+</span>которого<span style="mso-spacerun: yes">  </span>по умолчанию
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>установлен равным
+3,<span style="mso-spacerun: yes">  </span>то это означает, что специфицирован
+цветной
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>режим<span
+style="mso-spacerun: yes">   </span>отображения<span style="mso-spacerun:
+yes">   </span>текста<span style="mso-spacerun: yes">  </span>80*25<span
+style="mso-spacerun: yes">  </span>строк.<span style="mso-spacerun: yes"> 
+</span>По<span style="mso-spacerun: yes">  </span>умолчанию<span
+style="mso-spacerun: yes">  </span>текст
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>отображается на экране
+в белом цвете, однако, имеется возможность
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+488.4pt;margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>отображать текст в других
+цветах. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-2">Атрибутный байт текстового режима. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Каждый символ отображается на экране дисплея в
+соответствии с его атрибутным байтом, определяющим как именно отображается
+символ (см. главу 1). Если компьютер включает в себя цветной адаптер,
+работающий в видеорежиме, определяемом значением 3, то соответствующее значение
+атрибутного байта определяет цвет отображаемого символа, цвет фона,
+интенсивность отображения символа (уровень яркости), а также устанавливает или
+отменяет режим мерцания символа. Состав атрибутного байта показан в Таблице
+8.1.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Биты 0, 1 и 2 атрибутного байта определяют компоненты
+цвета символа. Например, если установлен бит 0 (значение бита равно 1), то
+символ отображается в голубом цвете. Если значение всех этих битов не
+установлено, то символ является неотображаемым. Запомните, что цвета
+накладываются друг на друга. Если значения всех этих битов установлены (равны
+1), символ отображается в белом цвете. Если вы установили значения двух из этих
+битов, то будет генерирован либо ярко-красный, либо голубой (циановый) цвет
+символа. Биты с 4 по 6 используются для установки цвета фона. Если значение
+этих битов не установлено (равно 0), то цвет фона будет черным, в противном
+случае цвет фона определяется в соответствии со специфицированным значением
+битов.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>На заре микрокомпьютеров режимом, в котором видеосистемой отображались
+символы по умолчанию, был режим полной яркости, однако наряду с этим режимом
+имелась возможность отображать символы в режиме пониженной яркости. После
+реализации IBM PC пользователю был предложен альтернативный путь: По умолчанию
+отображение символов видеосистемой PC выполняется в режиме
+&quot;нормальной&quot; яркости, но вы имеете возможность отображать символы в
+режиме повышенной яркости, устанавливая значение 1 для соответствующего бита
+атрибутного байта (бита повышенной яркости) В добавок ко всему вы можете
+установить режим мерцания символа, установив значение соответствующего бита.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+5.55pt;margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><u><span style='font-size:10.0pt'>Таблица 8-1. <o:p></o:p></span></u></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+5.55pt;margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>Состав атрибутного байта
+при работе в 3 видеорежиме
+
+<table border=0 cellspacing=0 cellpadding=0 style='margin-left:24.0pt;
+ border-collapse:collapse;mso-padding-alt:0cm 2.0pt 0cm 2.0pt'>
+ <tr>
+  <td width=27 valign=top style='width:20.0pt;border-top:double 2.25pt;
+  border-left:double 2.25pt;border-bottom:solid .75pt;border-right:solid .75pt;
+  border-color:windowtext;padding:0cm 2.0pt 0cm 2.0pt'>
+  <p class=MsoNormal style='5.55pt;margin-right:0cm;
+  5.55pt;margin-left:0cm;mso-hyphenate:none;mso-layout-grid-align:none;
+  text-autospace:none'><![if !supportEmptyParas]>&nbsp;<![endif]><span
+  style='font-size:10.0pt'>
+  </td>
+  <td width=96 valign=top style='width:72.0pt;border-top:double windowtext 2.25pt;
+  border-left:none;border-bottom:solid windowtext .75pt;border-right:solid windowtext .75pt;
+  mso-border-left-alt:solid windowtext .75pt;padding:0cm 2.0pt 0cm 2.0pt'>
+  <p class=MsoNormal style='11.1pt;margin-right:0cm;
+  0cm;margin-left:11.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Бит
+  <p class=MsoNormal style='11.1pt;margin-right:0cm;
+  0cm;margin-left:11.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>0
+  <p class=MsoNormal style='margin-left:11.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>1
+  <p class=MsoNormal style='margin-left:11.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>2
+  <p class=MsoNormal style='margin-left:11.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>3
+  <p class=MsoNormal style='margin-left:11.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>4
+  <p class=MsoNormal style='margin-left:11.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>5
+  <p class=MsoNormal style='margin-left:11.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>6
+  <p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+  margin-left:11.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+  none'><span style='font-size:10.0pt'>7
+  </td>
+  <td width=304 valign=top style='width:228.0pt;border-top:double windowtext 2.25pt;
+  border-left:none;border-bottom:solid windowtext .75pt;border-right:solid windowtext .75pt;
+  mso-border-left-alt:solid windowtext .75pt;padding:0cm 2.0pt 0cm 2.0pt'>
+  <p class=MsoNormal style='11.1pt;margin-right:0cm;
+  0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Устанавливаемое
+  значение
+  <p class=MsoNormal style='11.1pt;margin-right:0cm;
+  0cm;margin-left:33.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Голубой цвет символа
+  <p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Зеленый цвет символа
+  <p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Красный цвет символа
+  <p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Повышенная яркость
+  символа
+  <p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Голубой цвет фона
+  <p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Зеленый цвет фона
+  <p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Красный цвет фона
+  <p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Мерцание символа
+ 
+  </td>
+
+ </tr>
+ <tr>
+  <td width=27 valign=top style='width:20.0pt;border-top:none;border-left:double windowtext 2.25pt;
+  border-bottom:double windowtext 2.25pt;border-right:solid windowtext .75pt;
+  mso-border-top-alt:solid windowtext .75pt;padding:0cm 2.0pt 0cm 2.0pt'>
+  <p class=MsoNormal style='5.55pt;margin-right:0cm;
+  11.1pt;margin-left:0cm;mso-hyphenate:none;mso-layout-grid-align:none;
+  text-autospace:none'><span style='font-size:10.0pt'>__
+  </td>
+  <td width=96 valign=top style='width:72.0pt;border-top:none;border-left:none;
+  border-bottom:double windowtext 2.25pt;border-right:solid windowtext .75pt;
+  mso-border-top-alt:solid windowtext .75pt;mso-border-left-alt:solid windowtext .75pt;
+  padding:0cm 2.0pt 0cm 2.0pt'>
+  <p class=MsoNormal style='5.55pt;margin-right:0cm;
+  11.1pt;margin-left:0cm;mso-hyphenate:none;mso-layout-grid-align:none;
+  text-autospace:none'><span style='font-size:10.0pt'>___________
+  </td>
+  <td width=304 valign=top style='width:228.0pt;border-top:none;border-left:
+  none;border-bottom:double windowtext 2.25pt;border-right:solid windowtext .75pt;
+  mso-border-top-alt:solid windowtext .75pt;mso-border-left-alt:solid windowtext .75pt;
+  padding:0cm 2.0pt 0cm 2.0pt'>
+  <p class=MsoNormal style='5.55pt;margin-right:0cm;
+  11.1pt;margin-left:0cm;mso-hyphenate:none;mso-layout-grid-align:none;
+  text-autospace:none'><span style='font-size:10.0pt'>_____________________________________
+  </td>
+  <td width=112 valign=top style='width:84.0pt;border-top:none;border-left:
+  none;border-bottom:double windowtext 2.25pt;border-right:double windowtext 2.25pt;
+  mso-border-top-alt:solid windowtext .75pt;mso-border-left-alt:solid windowtext .75pt;
+  padding:0cm 2.0pt 0cm 2.0pt'>
+  <p class=MsoNormal style='5.55pt;margin-right:0cm;
+  11.1pt;margin-left:0cm;mso-hyphenate:none;mso-layout-grid-align:none;
+  text-autospace:none'><span style='font-size:10.0pt'>____________
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+410.7pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>В предыдущих параграфах были рассмотрены функции, которые выполняли
+считывание символов на экран, используя при этом как обращение к BIOS, так и
+непосредственный доступ к видеопамяти. Непосредственный доступ к видеопамяти
+является необходимым условием повышения скорости реакции задач на действия
+пользователя. Однако непосредственный доступ к видеопамяти значительно снижает
+возможность переносимости программ (их мобильность), а также является серьезной
+помехой при использовании программ в мультизадачных операционных системах типа
+OS/2. Функции, рассматриваемые в этой главе, используют возможности BIOS и
+видеопамяти по той причине, что сами по себе эти функции более мобильны и, в
+конечном итоге, для ускорения их быстродействия обычно не требуется стандартный
+вывод на дисплей. Следует отметить, что интуитивно использование
+непосредственного доступа к видеопамяти является более предпочтительным. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-3">Отображение строки в определенном цвете. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Отображение строки в определенном цвете не является
+столь трудной задачей, как вам может казаться на первый взгляд, если вы
+используете функции записи символа, которые используют, в свою очередь,
+возможности BIOS и видеопамяти (ROM-BIOS). ROM-BIOS прерывание 10Н, функция 9
+позволяет отобразить текущий символ (один!) в позиции курсора и его атрибуты.
+Проблема состоит лишь в перемещении курсора по записываемой вами строке, но это
+должна осуществлять непосредственно ваша подпрограмма.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>В соответствии с этим возникает, во-первых,
+необходимость определения текущей позиции курсора. Для этого используется
+функция read_cursor_xy(), представленная ниже. Эта функция использует
+ROM-BIOS-прерывание 10Н, функцию 3, для чтения текущих координат позиции курсора
+X и Y. Координаты позиции курсора возвращаются в качестве значений аргументов
+функции.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Чтение текущих
+координат позиции курсора */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void
+read_cursor_xy(x,y)
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *x,*y;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah = 3;<span
+style="mso-spacerun: yes">  </span>/* чтение текущей позиции курсора */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bh = 0;<span
+style="mso-spacerun: yes">  </span>/* видеостраница */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*y = r.h.dl;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*x = r.h.dh;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>После определения координат текущей позиции курсора,
+функция, которая выполняет печать строки, должна осуществить перемещение
+курсора к следующему символу, с тем, чтобы используя ROM-BIOS-прерывание
+напечатать его. Для перемещения курсора целесообразно использовать функцию
+goto_xy(), которая была уже рассмотрена ранее и приводится в этой главе для
+полноты изложения материала.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Перемещение курсора
+в позицию, специфицированную
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:71.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>координатами X и Y
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*/
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void goto_xy (x,y)
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int x,y;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah = 2; /* функция
+адресации курсора */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.dl = x; /*
+координата столбца */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.dh = y; /*
+координата строки */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bh = 0; /*
+видеостраница */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Функция color_puts(), представленная ниже, отображает
+специфицированную пользователем строку в указанном цвете.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Печать строки в
+цвете<span style="mso-spacerun: yes">   </span>*/
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void
+color_puts(s,color)
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *s;<span
+style="mso-spacerun: yes">  </span>/* строка */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char color; /* цвет
+строки */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char x,y;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>read_cursor_xy(&amp;x,&amp;y);
+/* получение текущей позиции курсора
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:148.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*/
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>while (*s) 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if (*s == '\n')<span
+style="mso-spacerun: yes">   </span>/* обработка символа новой строки */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>printf(&quot;\n&quot;);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>s++;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>x = 0; y++;<span
+style="mso-spacerun: yes">  </span>/* переход на следующую строку */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>continue;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:49.5pt;.0001pt;mso-hyphenate:none;tab-stops:91.5pt 103.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah<span
+style='mso-tab-count:1'>         </span>=<span style='mso-tab-count:1'>   </span>9;
+/* функция отображения символа и его атрибутов */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:49.5pt;.0001pt;mso-hyphenate:none;tab-stops:91.5pt 103.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.al<span
+style='mso-tab-count:1'>          </span>=<span style='mso-tab-count:1'>   </span>*s++;<span
+style="mso-spacerun: yes">    </span>/* отображаемый символ */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:49.5pt;.0001pt;mso-hyphenate:none;tab-stops:91.5pt 103.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bl<span
+style='mso-tab-count:1'>          </span>=<span style='mso-tab-count:1'>   </span>color;<span
+style="mso-spacerun: yes">   </span>/* атрибуты цвета */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:49.5pt;.0001pt;mso-hyphenate:none;tab-stops:91.5pt 103.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bh<span
+style='mso-tab-count:1'>        </span>=<span style='mso-tab-count:1'>   </span>0;<span
+style="mso-spacerun: yes">       </span>/*видеостраница 0 */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:49.5pt;.0001pt;mso-hyphenate:none;tab-stops:91.5pt 103.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.x.cx<span
+style='mso-tab-count:1'>          </span>=<span style='mso-tab-count:1'>   </span>1;
+/* отобразить за единицу времени ( такт ) */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>x++;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>goto_xy(x,y); /*
+перемещение курсора */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:60.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Как вы можете видеть, отображаемый символ запоминается
+в регистре AL, атрибуты цвета символа - в регистре BL, номер видеостраницы - в
+регистре BH, а количество интервалов времени (тактов процессора), за которое
+будет отображен символ - в регистре CX. Заметим, что функция также обрабатывает
+специальный символ новой строки ('\n'). Вы можете также, по желанию,
+организовать обработку символов табуляции ('\t'), двойных кавычек (&quot;) и
+других специальных символов.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Использование функции color_puts() предполагает наличие
+ряда макроопределений в начале вызывающей функцию программы. Перечень
+макроопределений представлен ниже
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;tab-stops:216.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+BLUE<span style='mso-tab-count:1'>                                          </span>1
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;tab-stops:192.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+GREEN<span style='mso-tab-count:1'>                             </span>2
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;tab-stops:210.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+RED<span style='mso-tab-count:1'>                                          </span>4
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;tab-stops:192.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+INTENSE<span style='mso-tab-count:1'>                         </span>8
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define BLUE_BACK<span
+style="mso-spacerun: yes">    </span>16
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define
+GREEN_BACK<span style="mso-spacerun: yes">   </span>32
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;tab-stops:192.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+RED_BACK<span style='mso-tab-count:1'>                    </span>64
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:66.0pt;mso-hyphenate:none;tab-stops:192.0pt;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define BLINK<span
+style='mso-tab-count:1'>                             </span>128
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+22.2pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>Используя эти макросы, вы
+можете по своему усмотрению выдать 
+
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>на экран строку текста
+на фоне установленного вами цвета, а также
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>саму строку в
+определенном вами цвете.<span style="mso-spacerun: yes">  </span>Вы можете
+также управлять
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>режимом отображения<span
+style="mso-spacerun: yes">  </span>строки<span style="mso-spacerun: yes"> 
+</span>(повышенная<span style="mso-spacerun: yes">  </span>яркость<span
+style="mso-spacerun: yes">  </span>или мерцание).
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Комбинируя цвета, режимы мерцания или повышенной яркости для одного или
+совокупности символов, вы можете добиться любого желаемого вами эффекта.
+Например, представленная ниже строка программы приведет к отображению строки
+&quot;А это - текст&quot; в режиме повышенной яркости в голубом (циановом)
+цвете:
+
+<p class=MsoNormal align=center style='11.1pt;margin-right:145.2pt;
+510.6pt;margin-left:0cm;text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>color_puts(&quot;А
+это - текст&quot;,GREEN | RED | INTENSE ); 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-4">Использование цвета. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Довольно эффективно использование многоцветного текста
+в различных приложениях. Во всяком случае многоцветный текст смотрится всегда
+намного эстетичней, чем монохромный. Однако при использовании многоцветного
+текста необходимо придерживаться следующих основных положений:
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>- Избегайте использования &quot;нестандартных&quot;
+цветов. Наиболее общим лучшим вариантом является отображение белых с имволов на
+черном фоне. Предпочтительнее вместо отображения какой-то важной информации в
+контрастном цвете отображать ее в режиме повышенной яркости.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>- Наиболее эффективным признано использование цветных
+рамок экрана и окон.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>- В ряде ситуаций полезным оказывается отображение
+отрицательного остатка (например, денежной суммы) в красном цвете.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+321.9pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>- Отображение текущей строки (или части текущей строки) в контрастном
+цвете является, пожалуй, лучшим приемом индикации положения действий
+пользователя на экране в текущий момент времени. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-5">Изменение размера курсора </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Большинство пользователей даже не представляют
+насколько велики возможности семейства машин IBM PC. В частности, они позволяют
+изменять размер курсора. По умолчанию курсор отображается в виде одной
+мерцающей строчки (развертки дисплея). Однако пользователь может варьировать
+размером курсора от одной строки развертки дисплея до полного размера (высоты)
+символа. В цветном текстовом режиме курсор может иметь высоту от 0 до 8 строк
+развертки. (В монохромном режиме курсор может иметь высоту от 0 до 14 строк
+развертки, однако в данном параграфе мы будем рассматривать только цветной
+режим). Нижняя строка развертки
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>имеет номер 0. Лучше
+всего рассматривать изменение курсора именно
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>относительно<span
+style="mso-spacerun: yes">  </span>строки<span style="mso-spacerun: yes"> 
+</span>развертки<span style="mso-spacerun: yes">  </span>0,<span
+style="mso-spacerun: yes">  </span>так<span style="mso-spacerun: yes"> 
+</span>как<span style="mso-spacerun: yes">  </span>применение другого
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>метода может привести
+к значительным расхождениям<span style="mso-spacerun: yes">  </span>результатов
+на
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>различных<span
+style="mso-spacerun: yes">  </span>компьютерах.<span style="mso-spacerun:
+yes">  </span>(В<span style="mso-spacerun: yes">  </span>принципе<span
+style="mso-spacerun: yes">  </span>применение<span style="mso-spacerun: yes"> 
+</span>других методов
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>возможно, однако вам
+необходимо помнить, что при их использовании
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>вы можете не добиться
+соответствия форм курсора при решении одной
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>и той же задачи
+на<span style="mso-spacerun: yes">  </span>разных<span style="mso-spacerun:
+yes">  </span>компьютерах).<span style="mso-spacerun: yes">  </span>При<span
+style="mso-spacerun: yes">  </span>условии,<span style="mso-spacerun: yes"> 
+</span>что<span style="mso-spacerun: yes">  </span>вы
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>будете рассматривать
+изменение формы курсора относительно нулевой
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>строки<span
+style="mso-spacerun: yes">  </span>развертки,<span style="mso-spacerun: yes"> 
+</span>изменение<span style="mso-spacerun: yes">  </span>формы<span
+style="mso-spacerun: yes">  </span>курсора<span style="mso-spacerun: yes"> 
+</span>будет<span style="mso-spacerun: yes">  </span>выполняться
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>аналогично изображенному на
+рис.8-1.
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+22.2pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Для установления размера курсора вам необходимо использовать
+ROM-BIOS-прерывание 10Н, функцию 1, которая устанавливает размер курсора.
+Начало курсора (начальная строка развертки) - запоминается в регистре CН, а
+конец (конечная строка развертки) в регистре CL. 
+
+<table border=0 cellspacing=0 cellpadding=0 style='margin-left:29.5pt;
+ border-collapse:collapse;mso-padding-alt:0cm 2.0pt 0cm 2.0pt'>
+ <tr>
+  <td width=515 valign=top style='width:386.5pt;border:solid windowtext .75pt;
+  padding:0cm 2.0pt 0cm 2.0pt'>
+  <p class=MsoNormal style='5.55pt;margin-right:0cm;
+  0cm;margin-left:16.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+  none;text-autospace:none'><span style='font-size:10.0pt'>Строка развертки
+  <p class=MsoNormal style='11.1pt;margin-right:44.0pt;
+  0cm;margin-left:264.0pt;.0001pt;text-align:justify;text-indent:
+  -247.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+  style='font-size:10.0pt'>7 ----- | |
+  <p class=MsoNormal style='0cm;margin-right:44.0pt;
+  0cm;margin-left:225.5pt;.0001pt;text-align:justify;text-indent:
+  -209.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+  style='font-size:10.0pt'>6 ----- | | | | | |
+  <p class=MsoNormal style='0cm;margin-right:44.0pt;
+  0cm;margin-left:187.0pt;.0001pt;text-align:justify;text-indent:
+  -170.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+  style='font-size:10.0pt'>5 ----- | | | | | | | | | |
+  <p class=MsoNormal style='0cm;margin-right:44.0pt;
+  0cm;margin-left:148.5pt;.0001pt;text-align:justify;text-indent:
+  -132.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+  style='font-size:10.0pt'>4 ----- | | | | | | | | | | | | | |
+  <p class=MsoNormal style='0cm;margin-right:44.0pt;
+  0cm;margin-left:110.0pt;.0001pt;text-align:justify;text-indent:
+  -93.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+  style='font-size:10.0pt'>3 ----- | | | | | | | | | | | | | | | | | |
+  <p class=MsoNormal style='0cm;margin-right:44.0pt;
+  0cm;margin-left:71.5pt;.0001pt;text-align:justify;text-indent:
+  -55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+  style='font-size:10.0pt'>2 ----- | | | | | | | | | | | | | | | | | | | | | |
+  <p class=MsoNormal style='0cm;margin-right:44.0pt;
+  0cm;margin-left:33.0pt;.0001pt;text-align:justify;text-indent:
+  -16.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+  style='font-size:10.0pt'>1 ----- | | | | | | | | | | | | | | | | | | | | | |
+  | | | |
+  <p class=MsoNormal style='0cm;margin-right:44.0pt;
+  5.55pt;margin-left:33.0pt;text-align:justify;text-indent:-16.5pt;mso-hyphenate:
+  none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+  10.0pt'>0 | | | | | | | | | | | | | | ----- ----- ----- ----- ----- -----
+  -----
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal style='0cm;margin-right:206.8pt;
+11.1pt;margin-left:104.5pt;text-indent:-60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>Рис. 8-1.<span
+style="mso-spacerun: yes">  </span>Возможность изменения формы курсора в
+цветном режиме.
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Функция size_cursor(), представленная ниже,
+устанавливает размер курсора.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Установление
+размера курсора */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void
+size_cursor(start,end)
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char start,end; /*
+начальная и конечная строки развертки */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah = 1; /* функция
+адресации курсора */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ch = start;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.cl = end;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>При использовании функции size_cursor() укажите
+желаемые начальную и конечную строки развертки, определяющие размер курсора.
+Например, следующая конструкция позволяет установить высоту курсора в три
+строки развертки:
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>size_cursor(0,2);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Форма курсора может быть изменена либо очередным
+вызовом функции size_cursor(), либо изменением видеорежима.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+299.7pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Использование курсоров различной формы позволяет не только полностью
+удовлетворить ваши эстетические требования, но и повысит наглядность программы.
+Имейте в виду, что большой мерцающий курсор вызывает у пользователей
+раздражение. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-6">Скроллинг части экрана </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Две совместно используемые функции ROM-BIOS-прерывания
+позволяют осуществлять скроллинг вперед и назад части экрана. Эти функции были
+включены в ROM-BIOS для поддержки многооконных интерфейсов. Как вы знаете,
+когда курсор расположен в двадцать пятой строке и вы нажали клавишу
+&lt;ВВОД&gt;, то автоматически осуществляется перемещение текста на одну строку
+вверх с целью отображения новой строки в нижней части экрана. Точно так же, с
+помощью функций 6 и 7 прерывания ROM-BIOS 10Н, можно осуществить скроллинг лишь
+части экрана. Функция 6 позволяет выполнить скроллинг в окне вниз (вперед), а
+функция 7 - вверх (назад).
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Обе функции при вызове используют информацию, хранимую
+в определенных регистрах. Занесите количество строк, на которые будет
+&quot;прокручиваться&quot; текст (мощность скроллинга) в регистр AL. Номер
+верхней левой строки, ограничивающей ваше &quot;окно&quot;, занесите в регистр
+CH, а номер верхнего левого столбца - в регистр CL. Номер нижней левой строки
+занесите в регистр DH, а номер нижнего правого столбца - в регистр DL. В конце
+запомните в регистре BH атрибуты режима отображения, которые будут определять,
+как именно будут отображаться в процессе скроллинга новые строки. Функция
+scroll_window() представлена ниже.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>/* Скроллинг в окне вперед
+и назад */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:57.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>void<span
+style='mso-tab-count:1'>     </span>scroll_window(startx,starty,endx,endy,lines,direct)
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:57.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>char<span
+style='mso-tab-count:1'>      </span>startx,starty;/* верхний левый угол */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:57.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>char<span
+style='mso-tab-count:1'>      </span>endx,endy;<span style="mso-spacerun:
+yes">    </span>/* нижний правый угол */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:57.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>char<span
+style='mso-tab-count:1'>      </span>lines;<span style="mso-spacerun:
+yes">        </span>/* число строк прокрутки */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:57.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>char<span
+style='mso-tab-count:1'>      </span>direct;<span style="mso-spacerun:
+yes">       </span>/* вперед или назад */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if ( direct == UP )
+r.h.ah = 6; /* скроллинг вперед */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>else r.h.ah = 7; /*
+скроллинг вниз (назад) */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.al<span
+style='mso-tab-count:1'>          </span>=<span style='mso-tab-count:1'>   </span>lines;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ch<span
+style='mso-tab-count:1'>         </span>=<span style='mso-tab-count:1'>   </span>starty;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.cl<span
+style='mso-tab-count:1'>          </span>=<span style='mso-tab-count:1'>   </span>startx;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.dh<span
+style='mso-tab-count:1'>        </span>=<span style='mso-tab-count:1'>   </span>endy;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.dl<span
+style='mso-tab-count:1'>          </span>=<span style='mso-tab-count:1'>   </span>endx;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bh<span
+style='mso-tab-count:1'>        </span>=<span style='mso-tab-count:1'>   </span>0;<span
+style="mso-spacerun: yes">     </span>/* режим отображения */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Вы можете определить макрос UP как имеющий некоторое значение. Вы также
+можете определить макрос DOWN, значение которого будет отлично от UP, а затем
+использовать при необходимости осуществления скроллинга в окне эти
+макроопределения. Такой прием значительно упростит вашу программу. Функция
+scroll_window() присваивает регистру ВН значение 0 для сохранения пустых строк,
+однако вы можете изменить это значение по своему усмотрению.
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-7">Простейшая демонстрационная программа </a></i></font></b></div></p>
+
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+22.2pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Эта программа позволяет продемонстрировать работу функций,
+рассмотренных в данной главе до настоящего момента. Эти функции позволяют
+изменить форму курсора, выдать сообщение в цвете, а также использовать
+скроллинг части экрана. Результат работы этой программы представлен на рис.8-2.
+
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>-----------------------------------------------------------------
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style='mso-tab-count:1'>                                                                                                                                                                          </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">   </span>a)<span style="mso-spacerun: yes">    
+</span>Это - тест<span style='mso-tab-count:1'>                                                                                                                                             </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<span
+style='mso-tab-count:1'>                                                         </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>cccccccccccccccccccccccccccccccccccccccccccccccccccccc<span
+style='mso-tab-count:1'>                                                         </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>dddddddddddddddddddddddddddddddddddddddddddddddddddddd<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee<span
+style='mso-tab-count:1'>                                                         </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">   </span><span style="mso-spacerun:
+yes">  </span>ffffffffffffffffffffffffffffffffffffffffffffffffffffff<span
+style='mso-tab-count:1'>                                                                                             </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>gggggggggggggggggggggggggggggggggggggggggggggggggggggg<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii<span
+style='mso-tab-count:1'>                                                                                                               </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">     </span>jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj<span
+style='mso-tab-count:1'>                                                                                                               </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk<span
+style='mso-tab-count:1'>                                                         </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>llllllllllllllllllllllllllllllllllllllllllllllllllllll<span
+style='mso-tab-count:1'>                                                                                                               </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm<span
+style='mso-tab-count:1'>   </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">     </span>nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>oooooooooooooooooooooooooooooooooooooooooooooooooooooo<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>pppppppppppppppppppppppppppppppppppppppppppppppppppppp<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">     </span>rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr<span
+style='mso-tab-count:1'>                                                                                             </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>ssssssssssssssssssssssssssssssssssssssssssssssssssssss<span
+style='mso-tab-count:1'>                                                         </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>tttttttttttttttttttttttttttttttttttttttttttttttttttttt<span
+style='mso-tab-count:1'>                                                                                             </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">     </span>vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style='mso-tab-count:1'>                                                                                                                                                                          </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">     </span>б) Это - тест.<span style='mso-tab-count:
+1'>                                                                                                                                              </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<span
+style='mso-tab-count:1'>                                                         </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>cccccccccccccccccccccccccccccccccccccccccccccccccccccc<span
+style='mso-tab-count:1'>                                                         </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>dddddddddddddddddddddddddddddddddddddddddddddddddddddd<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee<span
+style='mso-tab-count:1'>                                                         </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>ffffffffffffffffffffffffffffffffffffffffffffffffffffff<span
+style='mso-tab-count:1'>                                                                                             </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>gggggggggggggggggggggggggggggggggggggggggggggggggggggg<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii<span
+style='mso-tab-count:1'>                                                                                                               </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">     </span>jjjjjjjjjj<span style="mso-spacerun:
+yes">                     </span>jjjjjjjjjjjjjjjjjjjjjjj<span style='mso-tab-count:
+1'>                                                                                                               </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">     </span>kkkkkkkkkk<span style="mso-spacerun:
+yes">                     </span>kkkkkkkkkkkkkkkkkkkkkkk<span style='mso-tab-count:
+1'>                                                                              </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    </span><span style="mso-spacerun:
+yes"> </span>llllllllll<span style="mso-spacerun: yes">                    
+</span>lllllllllllllllllllllll<span style='mso-tab-count:1'>                                                                                                               </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>mmmmmmmmmmjjjjjjjjjjjjjjjjjjjjjmmmmmmmmmmmmmmmmmmmmmmm<span
+style='mso-tab-count:1'>                                             </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>nnnnnnnnnnkkkkkkkkkkkkkkkkkkkkknnnnnnnnnnnnnnnnnnnnnnn<span
+style='mso-tab-count:1'>                                              </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>oooooooooolllllllllllllllllllllooooooooooooooooooooooo<span
+style='mso-tab-count:1'>                                                                   </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">     </span>pppppppppppppppppppppppppppppppppppppppppppppppppppppp<span
+style='mso-tab-count:1'>                                       </span>|
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+22.2pt;margin-left:27.5pt;mso-hyphenate:none;tab-stops:411.5pt;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style="mso-spacerun: yes">    
+</span>qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq<span
+style='mso-tab-count:1'>                                       </span>| 
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;tab-stops:63.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style='mso-tab-count:1'>               </span>rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr<span
+style="mso-spacerun: yes">    </span>|
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;tab-stops:63.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style='mso-tab-count:1'>               </span>ssssssssssssssssssssssssssssssssssssssssssssssssssssss<span
+style="mso-spacerun: yes">    </span>|
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;tab-stops:63.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style='mso-tab-count:1'>               </span>tttttttttttttttttttttttttttttttttttttttttttttttttttttt<span
+style="mso-spacerun: yes">    </span>|
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;tab-stops:63.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style='mso-tab-count:1'>               </span>uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu<span
+style="mso-spacerun: yes">    </span>|
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;tab-stops:63.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style='mso-tab-count:1'>               </span>vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv<span
+style="mso-spacerun: yes">    </span>|
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;tab-stops:411.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>|<span
+style='mso-tab-count:1'>                                                                                                                                                                          </span>|
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>-----------------------------------------------------------------
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>Рис. 8-2 Результат работы программы. 
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Демонстрационная
+программа печати текста в цвете,
+
+<p class=MsoNormal style='margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>изменения формы
+курсора и скроллинга в окне
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>*/
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>#include &quot;dos.h&quot;
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;tab-stops:192.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+BLUE<span style='mso-tab-count:1'>                               </span>1
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;tab-stops:192.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+GREEN<span style='mso-tab-count:1'>                             </span>2
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;tab-stops:192.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+RED<span style='mso-tab-count:1'>                                  </span>4
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;tab-stops:192.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+INTENSE<span style='mso-tab-count:1'>                         </span>8
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define BLUE_BACK<span
+style="mso-spacerun: yes">   </span>16
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define
+GREEN_BACK<span style="mso-spacerun: yes">  </span>32
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define RED_BACK<span
+style="mso-spacerun: yes">    </span>64
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;tab-stops:180.0pt;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define BLINK<span
+style='mso-tab-count:1'>                        </span>128
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;tab-stops:190.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>#define
+UP<span style='mso-tab-count:1'>                            </span>0
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;tab-stops:192.0pt;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define DOWN<span
+style='mso-tab-count:1'>                            </span>1
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void
+mode(),color_puts(),palette(), read_cursor_xy();
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>void
+goto_xy(),size_cursor(),scroll_window();
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>main()
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>int i,j;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:71.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>mode(3); /* режим текстовый, цветной */
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>size_cursor(0,3);
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>goto_xy(0,0);
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>color_puts(&quot; Это
+- тест\n&quot;,BLUE |RED | INTENSE);
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for ( i=0;i&lt;22;i++)
+
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for ( j=0;j&lt;79;j++)
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>printf(&quot;%c&quot;,i+'a');
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>printf(&quot;\n&quot;);
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>getche();
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>scroll_window(10,10,50,15,3,DOWN);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>getche();
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>/* Печать строки в цвете */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void
+color_puts(s,color)
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:82.5pt;mso-hyphenate:none;tab-stops:166.5pt;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *s;<span
+style='mso-tab-count:1'>                       </span>/* строка */ 
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char color;<span
+style="mso-spacerun: yes">   </span>/* цвет строки */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>char x,y;
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>read_cursor_xy(&amp;x,&amp;y);
+/* чтение текущей позиции
+
+<p class=MsoNormal align=center style='text-align:center;mso-hyphenate:none;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>курсора<span
+style="mso-spacerun: yes">   </span>*/
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>while (*s) 
+
+<p class=MsoNormal style='margin-left:115.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if (*s == '\n')<span
+style="mso-spacerun: yes">  </span>/* обработка символа новой
+
+<p class=MsoNormal style='margin-left:231.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>строки */
+
+<p class=MsoNormal style='margin-left:115.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>printf(&quot;\n&quot;);
+
+<p class=MsoNormal style='margin-left:115.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>s++;
+
+<p class=MsoNormal style='margin-left:115.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>x = 0; y++;<span
+style="mso-spacerun: yes">  </span>/* переход к новой строке */
+
+<p class=MsoNormal style='margin-left:115.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>continue;
+
+<p class=MsoNormal style='margin-left:115.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;tab-stops:
+152.0pt 164.0pt;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>r.h.ah<span style='mso-tab-count:1'>         </span>=<span
+style='mso-tab-count:1'>   </span>9;/* отображение символов по атрибутам */
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;tab-stops:
+152.0pt 164.0pt;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>r.h.al<span style='mso-tab-count:1'>          </span>=<span
+style='mso-tab-count:1'>   </span>*s++; /* выдаваемый символ */
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;tab-stops:
+152.0pt 164.0pt;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>r.h.bl<span style='mso-tab-count:1'>          </span>=<span
+style='mso-tab-count:1'>   </span>color;<span style="mso-spacerun: yes"> 
+</span>/* атрибут цвета */
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;tab-stops:
+152.0pt 164.0pt;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>r.h.bh<span style='mso-tab-count:1'>        </span>=<span
+style='mso-tab-count:1'>   </span>0; /*<span style="mso-spacerun: yes">    
+</span>видеостраница 0 */
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;tab-stops:
+152.0pt 164.0pt;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>r.x.cx<span style='mso-tab-count:1'>          </span>=<span
+style='mso-tab-count:1'>   </span>1; /* выдача символа за один такт */
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>x++;
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;tab-stops:
+224.0pt;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>goto_xy(x,y);<span style='mso-tab-count:1'>                           </span>/*
+перемещение курсора */
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* чтение текущей
+позиции курсора */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void
+read_cursor_xy(x,y)
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *x,*y;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah = 3; /* чтение
+позиции курсора */
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bh = 0; /*
+видеостраница 0 */
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*y = r.h.dl;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>*x = r.h.dh;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* установка палитры
+*/
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void palette(pnum)
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int pnum;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bh = 1;<span
+style="mso-spacerun: yes">  </span>/* код для графического режима 4 */
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bl = pnum;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah = 11; /*
+функция установки палитры */
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* установка
+видеорежима */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void mode(mode_code)
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>int mode_code; 
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.al = mode_code;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah = 0;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* перемещение курсора
+в позицию x,y */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void goto_xy(x,y)
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int x,y;
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah = 2; /* функция
+адресации курсора */
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.dl = x; /*
+координаты столбца */
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.dh = y; /*
+координаты строки */
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bh = 0; /*
+видеостраница 0 */
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* установка размера
+(формы) курсора */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void
+size_cursor(start,end)
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char start,end; /*
+начальная и конечная строки
+
+<p class=MsoNormal style='margin-left:137.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>развертки */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah = 1; /* функция
+адресации курсора */
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ch = start;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.cl = end;
+
+<p class=MsoNormal style='margin-left:88.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* скроллинг в окне
+вперед и назад */
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;tab-stops:79.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>void<span
+style='mso-tab-count:1'>     </span>scroll_window(startx,starty,endx,endy,lines,direct)
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;tab-stops:79.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>char<span
+style='mso-tab-count:1'>      </span>startx,starty; /* верхний левый угол */
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;tab-stops:79.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>char<span
+style='mso-tab-count:1'>      </span>endx,endy;<span style="mso-spacerun:
+yes">     </span>/* нижний правый угол */
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;tab-stops:79.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>char<span
+style='mso-tab-count:1'>      </span>lines;<span style="mso-spacerun:
+yes">         </span>/* мощность скроллинга */
+
+<p class=MsoNormal style='margin-left:49.5pt;mso-hyphenate:none;tab-stops:79.5pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>char<span
+style='mso-tab-count:1'>      </span>direct;<span style="mso-spacerun:
+yes">        </span>/* вверх или вниз */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if ( direct == UP )
+r.h.ah = 6; /* скроллинг вверх */
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>else r.h.ah = 7; /* скроллинг вниз */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.al<span
+style='mso-tab-count:1'>          </span>=<span style='mso-tab-count:1'>   </span>lines;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ch<span
+style='mso-tab-count:1'>         </span>=<span style='mso-tab-count:1'>   </span>starty;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.cl<span
+style='mso-tab-count:1'>          </span>=<span style='mso-tab-count:1'>   </span>startx;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.dh<span
+style='mso-tab-count:1'>        </span>=<span style='mso-tab-count:1'>   </span>endy;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.dl<span
+style='mso-tab-count:1'>          </span>=<span style='mso-tab-count:1'>   </span>endx;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;tab-stops:97.0pt 109.0pt;
+mso-layout-grid-align:none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bh<span
+style='mso-tab-count:1'>        </span>=<span style='mso-tab-count:1'>   </span>0;
+/* режим отображения */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-8">Сохранение копии экрана в дисковом файле. </a></i></font></b></div></p>
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Ни в DOS, ни в OS/2 нет утилит, сходных с утилитой
+печати копии экрана, позволяющей сохранять текущее содержимое экрана дисплея в
+дисковом файле. В этом разделе вы найдете пояснение, как можно создать
+программу, которая выполняла бы именно эту функцию.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Эта программа использует ROM-BIOS-прерывание 10Н,
+функцию 8 для чтения символа из текущей позиции курсора, после чего этот символ
+записывается в файл на диске. Как и в предыдущем разделе, вы опять встретитесь
+с функцией goto_xy(), которая в этом случае используется для перемещения
+курсора последовательно по всем строкам экрана, начиная с левого верхнего угла
+экрана до правого нижнего угла.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Имя файла, в котором будет храниться копия экрана,
+указываетя в качестве аргумента программы. Если, к примеру, вы назовете свою
+программу, копирующую экран на диск, screen, то представленная ниже командная
+строка приведет к созданию копии экрана в файле с именем scr.sav:
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>C&gt; screen scr.sav
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>А вот исходный текст самой
+программы копирования:
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Эта программа
+копирует содержимое экрана вашего
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:99.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>дисплея в файл, имя
+которого указано в командной
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:99.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>строке
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>*/
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#include
+&quot;dos.h&quot;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>#include
+&quot;stdio.h&quot;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>void
+save_screen(),goto_xy();
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>main(argc,argv)
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int argc;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *argv[];
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if ( argc != 2 ) 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>printf(&quot;
+используйте формат : screen &lt;имя файла&gt;&quot;);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>exit(1);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>save_screen(argv[1]);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* сохранение
+содержимого экрана в дисковом файле */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void
+save_screen(fname)
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>char *fname;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:347.6pt;
+11.1pt;margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>FILE *fp; union REGS r;
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>register char x,y;
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if ( !(
+fp=fopen(fname,&quot;w&quot;))) 
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>printf(&quot; Файл не
+может быть открыт &quot;);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>exit(1);
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:60.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for (y=0;y&lt;25;y++)
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for (x=0;x&lt;80;x++) 
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>goto_xy(x,y);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah = 8; /* чтение
+символа */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bh = 0; /*
+видеостраница */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>putc(r.h.al,fp); /*
+выдача (печать) символа */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>fclose(fp);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Перемещение курсора
+в позицию (x,y) */
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void goto_xy(x,y)
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int x,y;
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>union REGS r;
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.ah = 2; /* функция
+адресации курсора */
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.dl = x; /*
+координата столбца */
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.dh = y; /*
+координата строки */
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>r.h.bh = 0; /*
+видеостраница */
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int86(0x10,&amp;r,&amp;r);
+
+<p class=MsoNormal style='margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+188.7pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Создаваемый файл представляет собой стандартный ASCII файл, который
+может быть отредактирован и распечатан как обычный текстовый файл. Программа
+позволяет записывать лишь символы, отображенные на экране, но не позволяет
+сохранить соответствующие атрибуты отображения символов. Однако дополнить
+программу для того, чтобы она записывала и атрибуты символов несложно, и вы при
+желании можете это сделать самостоятельно. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-9">А теперь добавим звук. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+499.5pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Использование со вкусом звука значительно повышает привлекательность
+программ. Звук может быть использован в широком спектре от тоненького
+&quot;писка&quot; машины до исполнения музыки или различных специальных
+эффектов. В этом параграфе вы научитесь, как можно управлять высотой и
+продолжительностью звучания нот, генерируемых динамиком компьютера. Мы также
+продемонстрируем вам некоторые наиболее интересные звуковые эффекты. 
+
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-10">Программируемый таймер 8253. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Генерация звуков в компьютере PC выполняется с помощью
+программируемого таймера 8253, который применяется для управления колебаниями
+динамика. Управление колебаниями динамика определяется частотой, которая, в
+свою очередь, определяется содержимым различных внутренних регистров. Значения
+этих регистров устанавливаются при записи в определенные порты. Порт 66
+используется для спецификации счетчика, который использует таймер при
+определении интервала колебаний динамика. Таймер работает в строгом
+соответствии с частотой системного таймера и специфицированным значением
+счетчика, определяющим колебания динамика. Затем, после обнуления счетчика
+происходит установка нового значения счетчика, и весь цикл функционирования
+программируемого таймера повторяется сначала. Значение счетчика определяется по
+следующей формуле:
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>count = 1,193,180/требуемая
+частота
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>где 1,193,180 есть тактовая
+частота системного таймера.
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Регистр-счетчик таймера 8253 устанавливается в
+следующей последовательности (значение счетчика задается двухбайтным числом):
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:60.5pt;.0001pt;text-align:justify;text-indent:
+-22.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>1. Выдать в порт 67 значение 182 (означающее, что
+будет устанавливаться счетчик).
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:60.5pt;.0001pt;text-indent:-22.0pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>2.<span style="mso-spacerun: yes">  </span>Выдать в порт 66 младший
+байт числа, определяющего значение счетчика.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:60.5pt;.0001pt;text-indent:-22.0pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>3.<span style="mso-spacerun: yes">  </span>Выдать в порт 66 старший
+байт числа, определяющего значение счетчика.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Динамики большинства компьютеров класса PC не
+позволяют воспроизводить полный спектр частот, воспринимаемых человеческим
+слухом (от 20 Гц до 18.000 Гц). Однако динамик позволяет воспроизводить ноты
+лучше, чем динамики других компьютеров в пределах 12000 Гц и даже выше. В
+основном же динамик используется в пределах 100-5000 Гц.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Итак, таймер установлен. Однако динамик еще не будет воспроизводить
+звук, так как не включен. Таймер 8253 активен постоянно, а динамик требует
+дополнительной команды включения. Активизация динамика осуществляется путем
+установки значений битов 0 и 1 регистра программируемого периферийного
+интерфейса, задание значений которого выполняется через порт 97. Если значения
+этих двух битов установлены (равны 1), то динамик издает звук частотой,
+установленной счетчиком 8253. Если значения этих битов равны 0, то никакой звук
+генерироваться не будет. Остальные биты этого байта используются другими
+устройствами, поэтому интерпретация значения левых битов не может быть изменена.
+Таким образом, для установки значений управляющих динамиком бит
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>необходимо выполнить следующую
+последовательность действий:
+
+<p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>1. Получить текущее
+значение регистра из порта 97.
+
+<p class=MsoNormal style='margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>2. Сравнить это
+значение с 3 или установить равным 3.
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:33.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>3. Записать результат в порт 97.
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Для того, чтобы выключить динамик, необходимо
+переслать в порт значение 253.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Простейшим приемом, позволяющим читать и писать байт
+из или в порт, в Си является использование соответствующих функций. В Турбо Cи
+- это функции inportb() и outportb(). В Microsoft Cи - это функции inp() и
+outp(). Они имеют следующий общий формат:
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int inportb(int port);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void outportb(int
+port, char value);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int inp(unsigned
+port);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>int outp(unsigned port, int
+value);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+344.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>В других компиляторах Си эти функции могут иметь иные названия, но
+обязательно будут присутствовать в вашей библиотеке, так как являются одними из
+базовых функций версий Си для ПЭВМ. В программах, приведенных в этом параграфе,
+используются функции Турбо Cи. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-11">Простейший способ проверки слуха. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Вы обладаете возможностью сделать несколько грубый, но
+эффективный тест слуха, который в состоянии обнаружить некоторые типы дефекта
+слуха. Как вы ранее узнали, динамик большинства компьютеров серии PC не
+воспроизводит звуки выше 12000 Гц. Однако ряд людей, у которых отмечены
+некоторые отклонения слуха, не могут услышать звук даже такой частоты.
+Фактически, тестируя свой слух, вы будете несколько удивлены тем, насколько
+высоким окажется звук с частотой 12000 Гц. (Предупреждение: тестирование слуха
+с помощью этого теста можно производить лишь ради шутки. Он, естественно, не
+позволяет действительно оценить слух испытуемого. Поэтому, если вы заметили у
+себя дефекты слуха или хотите действительно проверить свой слух, обратитесь
+лучше к своему врачу).
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Для получения звука в тесте используется функция
+sound(), которая генерирует непродолжительное звучание специфицированной ноты.
+Как показано ниже, эта функция содержит все необходимое для того, чтобы сгенерировать
+любой звук с помощью динамика компьютера.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>/* Звучание динамика на
+заданной частоте */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void sound(freq)
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int freq;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unsigned i;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>union 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>long divisor;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unsigned char c[2];
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>count;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>unsigned char p;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>count.divisor =
+1193280 / freq; /* вычисление небходимого
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;text-indent:181.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>значения счетчика */ outportb(67,182); /* обращение к таймеру 8253
+после
+
+<p class=MsoNormal style='0cm;margin-right:149.6pt;
+0cm;margin-left:66.0pt;.0001pt;text-indent:115.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>установки счетчика */ outportb(66,count.c[0]); /* пересылка младшего
+байта */ outportb(66,count.c[1]); /* пересылка старшего байта */ p =
+inportb(97); /* чтение существующего шаблона бит */ outportb(97,p|3); /*
+установка битов 0 и 1 */
+
+<p class=MsoNormal style='11.1pt;margin-right:149.6pt;
+11.1pt;margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>for (i=0;i&lt;64000;++i);
+/* цикл задержки */
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>outportb(97,p); /*
+восстановление первоначального значения
+
+<p class=MsoNormal style='margin-left:170.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>шаблона бит для
+отключения динамика */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='0cm;margin-right:0cm;22.2pt;
+margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>Заметим, что<span style="mso-spacerun:
+yes">  </span>частота<span style="mso-spacerun: yes">  </span>звучания<span
+style="mso-spacerun: yes">  </span>ноты<span style="mso-spacerun: yes"> 
+</span>специфицирована<span style="mso-spacerun: yes">   </span>как 
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>аргумент функции. Цикл
+задержки необходим, так как без него вы бы
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>услышали<span
+style="mso-spacerun: yes">  </span>только<span style="mso-spacerun: yes"> 
+</span>мгновенный<span style="mso-spacerun: yes"> 
+</span>&quot;щелчок&quot;<span style="mso-spacerun: yes">  </span>или<span
+style="mso-spacerun: yes">  </span>&quot;писк&quot;.<span style="mso-spacerun:
+yes">  </span>Вы<span style="mso-spacerun: yes">   </span>можете
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>изменить<span
+style="mso-spacerun: yes">  </span>частоту<span style="mso-spacerun: yes"> 
+</span>работы<span style="mso-spacerun: yes">  </span>системного<span
+style="mso-spacerun: yes">  </span>таймера<span style="mso-spacerun: yes"> 
+</span>процессора вашего
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>компьютера.<span
+style="mso-spacerun: yes">  </span>При этом,<span style="mso-spacerun: yes"> 
+</span>оформив<span style="mso-spacerun: yes">  </span>его<span
+style="mso-spacerun: yes">  </span>как<span style="mso-spacerun: yes"> 
+</span>параметр<span style="mso-spacerun: yes">  </span>функции,<span
+style="mso-spacerun: yes">  </span>вы
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>добьетесь<span
+style="mso-spacerun: yes">  </span>определенной<span style="mso-spacerun:
+yes">  </span>эффективности<span style="mso-spacerun: yes">  </span>вашей
+программы.<span style="mso-spacerun: yes">  </span>Функция
+
+<p class=MsoNormal style='margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>sound()<span
+style="mso-spacerun: yes">  </span>может<span style="mso-spacerun: yes"> 
+</span>использоваться<span style="mso-spacerun: yes">   </span>и<span
+style="mso-spacerun: yes">   </span>для<span style="mso-spacerun: yes">  
+</span>получения<span style="mso-spacerun: yes">   </span>банального
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>&quot;пищания&quot; компьютера.
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Управляющая функция для программы теста слуха представлена ниже.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>/* Простейший тест слуха */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>#include &quot;dos.h&quot;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>void sound();
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>main()
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>int freq;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>do 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:93.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>printf(&quot; Введите
+частоту ( 0 - выход ): &quot;);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:93.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>scanf(&quot;%d&quot;,&amp;freq);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:93.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>if ( freq )
+sound(freq);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>while(freq);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+233.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>При использовании теста, в возрастающем порядке указывайте частоту
+звука до тех пор, пока звук воспринимается на слух. Для выхода введите 0. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-12">Имитация звука сирены и взврыва. </a></i></font></b></div></p>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Вы можете использовать возможность управления
+динамиком для создания различных звуковых эффектов, которые, в частности,
+делают видеоигры очень интересными и привлекательными. В основе всех звуковых
+эффектов лежит варьирование частоты звука - часто самым необычным образом.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Например, для создания эффекта звучания сирены вы должны варьировать
+частоту звука между двумя конечными точками. Высота звука должна изменяться от
+меньшей к большей, а затем уменьшаться от большей к меньшей. Функция siren(),
+представленная ниже, использует этот метод для создания эффекта звучания
+сирены.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>#define DELAY 10000
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* Создание эффекта
+звучания сирены */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void siren()
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unsigned i,freq;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>union 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>long divisor;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unsigned char c[2];
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>count;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>unsigned char p;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>p = inportb(97); /*
+чтение существующего шаблона бит */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>outportb(97,p|3); /*
+установка бит 0 и 1 */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* повышение звука
+сирены */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for (freq =
+1000;freq&lt;3000;freq+=RATE) 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>count.divisor =
+1193280 / freq; /* вычисление нужного
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;text-indent:192.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>значения счетчика */ outportb(67,182); /* обращение к таймеру 8253
+после
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;text-indent:126.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>определения значения счетчика */ outportb(66,count.c[0]); /* пересылка
+младшего байта */ outportb(66,count.c[1]); /* пересылка старшего байта */
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for
+(i=0;i&lt;DELAY;++i);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* понижение звука
+сирены */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for
+(;freq&gt;1000;freq-=RATE) 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>count.divisor =
+1193280 / freq; /* вычисление нужного
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;text-indent:192.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>значения счетчика */ outportb(67,182); /* обращение к таймеру 8253
+после
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;text-indent:126.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>определения значения счетчика */ outportb(66,count.c[0]); /* пересылка
+младшего байта */ outportb(66,count.c[1]); /* пересылка старшего байта */
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for
+(i=0;i&lt;DELAY;++i);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>outportb(97,p); /*
+восстановление начального вида шаблона
+
+<p class=MsoNormal style='margin-left:220.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>бит для отключения
+динамика */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Вы можете переопределить значение макроса DELAY в
+зависимости от производительности вашего компьютера и вашего вкуса. Как вы
+видите, функция siren() выполняет один полный цикл звучания сирены и на этом
+завершает свою работу. Для получения эффекта продолжительного звучания сирены
+вам надо поместить обращение к siren() в цикл.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Для имитации звука взрыва, который используется во многих видеоиграх,
+можно модифицировать функцию siren() таким образом, чтобы она позволяла
+генерировать звук лишь нисходящей частоты. Функция laser(), представленная
+ниже, позволяет получить этот эффект.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>#define DELAY 10000
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* получение эффекта
+взрыва */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void laser()
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unsigned i,freq;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>union 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>long divisor;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unsigned char c[2];
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>count;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:66.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>unsigned char p;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>p = inportb(97); /*
+чтение существующего шаблона бит */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>outportb(97,p|3); /*
+установка бит 0 и 1 */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* взрыв */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for
+(;freq&gt;1000;freq-=RATE) 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>count.divisor =
+1193280 / freq; /* вычисление нужного
+
+<p class=MsoNormal align=center style='margin-right:145.2pt;text-align:center;
+mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>значения счетчика */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>outportb(67,182); /* обращение
+к таймеру 8253 после
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;text-indent:55.0pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>определения значения счетчика */ outportb(66,count.c[0]); /* пересылка
+младшего байта */ outportb(66,count.c[1]); /* пересылка старшего байта */
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for (i =
+0;i&lt;DELAY;++i);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>outportb(97,p); /*
+восстановление начального вида шаблона
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:170.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>бит для отключения
+динамика */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+22.2pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>После небольшого экспериментирования вы сможете сами создавать широкий
+спектр звуковых эффектов. Интерес представляет варьирование скоростью изменения
+частоты звука для получения определенных эффектов. 
+
+<!--<br><br><a href="#top">наверх</a>-->
+<p><div align="center"><b><font size="+1"><i><a name="8-13">Создание &quot;космической музыки&quot;. </a></i></font></b></div></p>
+
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Соединив воедино произвольное количество стандартных
+функций Си rend() и sound(), вы создадите &quot;космическую&quot; музыку. Звук,
+получаемый при выполнении программы, представленной ниже, напоминает
+&quot;музыку звезд&quot; в старых научно-фантастических фильмах. Несмотря на
+то, что все звуки генерируются произвольным образом, ритм и рисунок мелодии,
+возникающие время от времени, действительно оставляют впечатление
+&quot;небесной музыки&quot;.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+11.1pt;margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>/* Космическая музыка звезд
+*/
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>#define DELAY 64000
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>#include &quot;dos.h&quot;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:55.0pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>void sound();
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>main()
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+11.1pt;margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>int freq;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>do 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>do 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:137.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>freq = rand();
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:110.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>while (freq&gt;5000); /* после персонального
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:110.0pt;.0001pt;text-indent:132.0pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>прослушивания */ sound(freq);
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>while (!kbhit());
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>/* звучание динамика
+на специфицированной частоте */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>void sound(freq)
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>int freq;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unsigned i;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>union 
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>long divisor;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unsigned char c[2];
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><span
+style="mso-spacerun: yes"> </span>count;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>unsigned char p;
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:66.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>count.divisor =
+1193280 / freq; /* вычисление нужного
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;text-indent:176.0pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>значения счетчика */ outportb(67,182); /* обращение к таймеру 8253
+после
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;text-indent:115.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>определения значения счетчика */ outportb(66,count.c[0]); /* пересылка
+младшего байта */ outportb(66,count.c[1]); /* пересылка старшего байта */
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;
+0cm;margin-left:82.5pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>p = inportb(97); /*
+чтение существующего шаблона бит */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+33.3pt;margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:none;
+text-autospace:none'><span style='font-size:10.0pt'>outportb(97,p|3); /*
+установка бит 0 и 1 */ 
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>for (i =
+0;i&lt;DELAY;++i); /* задержка 64000 для 10+ Мгц
+
+<p class=MsoNormal style='margin-left:236.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>компьютеров
+
+<p class=MsoNormal style='margin-left:220.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>32000 для 6 МГц PC/AT
+
+<p class=MsoNormal style='0cm;margin-right:0cm;11.1pt;
+margin-left:220.0pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:
+none'><span style='font-size:10.0pt'>20000 для стандарта PC и XT */
+
+<p class=MsoNormal style='margin-left:82.5pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>outportb(97,p); /*
+восстановление начального вида
+
+<p class=MsoNormal style='margin-left:110.0pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'>шаблона бит для
+отключения динамика */
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:55.0pt;.0001pt;mso-hyphenate:none;mso-layout-grid-align:
+none;text-autospace:none'><span style='font-size:10.0pt'><![if !supportEmptyParas]>&nbsp;<![endif]>
+
+<p class=MsoNormal style='0cm;margin-right:145.2pt;
+0cm;margin-left:27.5pt;.0001pt;text-align:justify;text-indent:
+27.5pt;mso-hyphenate:none;mso-layout-grid-align:none;text-autospace:none'><span
+style='font-size:10.0pt'>Эта программа генерирует звуки частотой менее 5000 Гц,
+так как звуки именно в пределах этой частоты наиболее мягко воспринимаются
+слухом и не выходят за границы, воспринимаемые ухом человека.
+
+<p class=MsoNormal style='11.1pt;margin-right:145.2pt;margin-left:27.5pt;text-align:justify;text-indent:27.5pt;mso-hyphenate:
+none;mso-layout-grid-align:none;text-autospace:none'><span style='font-size:
+10.0pt'>Рекомендуем вам поэкспериментировать с этой программой, установив
+произвольную длину интервала времени между звуками или фильтруя значения,
+передаваемые в sound(). Возможны и другие варианты развития вашего творчества. 
+
+</body>
+</html><!--Saved from http://mymanual.narod.ru>

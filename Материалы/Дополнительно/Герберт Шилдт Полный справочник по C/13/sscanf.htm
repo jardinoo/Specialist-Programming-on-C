@@ -1,0 +1,35 @@
+<HTML><HEAD>
+<TITLE>Функция sscanf</TITLE>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=Windows-1251"> 
+<LINK REL=STYLESHEET TYPE="text/css" HREF="../work/css.css">
+</HEAD><BODY>
+<A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A><HR>
+<H1>Функция sscanf</H1>
+<PRE>
+#include &lt;stdio.h&gt;
+int sscanf(const char *<I>buf</I>, const char *<I>format</I>, ...);
+</PRE>
+<P class="tj">Функция <KBD>sscanf()</KBD> идентична функции <KBD>scanf()</KBD>, но данные читаются из массива, адресуемого параметром <I>buf</I>, а не из стандартного потока ввода <KBD>stdin</KBD>. Подробности приводятся в разделе <KBD>scanf</KBD>.
+<P class="tj">В версии C99 к параметрам <I>buf</I> и <I>format</I> применен квалификатор <KBD>restrict</KBD>.
+<P class="tj">Значение, возвращаемое функцией, равно количеству переменных, которым реально были присвоены значения. К ним не относятся поля, опущенные из-за использования модификатора команды форматирования *. Нулевое значение свидетельствует о том, что ни одно поле не было присвоено, а значение <KBD>EOF</KBD> сигнализирует об ошибке, обнаруженной до первого присваивания.
+<H2>Пример</H2>
+<P class="tj">Данная программа выводит на экран сообщение
+<PRE>привет 1</PRE>
+<PRE>
+#include &lt;stdio.h&gt;
+
+int main(void)
+{
+  char str[80];
+  int i;
+
+  sscanf("привет 1 2 3 4 5", "%s%d", str, &i);
+  printf("%s %d", str, i);
+
+  return 0;
+}
+</PRE>
+<H2>Зависимые функции</H2>
+<A href="scanf.htm">scanf()</A>  <A href="fscanf.htm">fscanf()</A>
+<HR><A href="../main.htm#13">Содержание</A> | <A href="13.htm#00">Глава 13</A>
+</BODY></HTML>
